@@ -194,6 +194,21 @@ class BackendTests(TestCase):
             self.assertEqual(self.client.get(f'/dashboard/{section}/').status_code, 200)
             self.assertEqual(self.client.get(f'/dashboard/{section}/new/').status_code, 200)
 
+    def test_dashboard_bulk_approve_variants(self):
+        pending = ProductVariant.objects.create(product=self.product, diameter_mm=63, pressure_bar=10)
+        other = ProductVariant.objects.create(product=self.product, diameter_mm=75, pressure_bar=10)
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.post('/dashboard/variants/approve/', {'ids': [pending.pk]}).status_code, 403)
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get('/dashboard/variants/approve/').status_code, 405)
+        self.assertContains(self.client.get('/dashboard/variants/?state=pending'), 'بانتظار الاعتماد')
+        response = self.client.post('/dashboard/variants/approve/', {'ids': [pending.pk, 'x'], 'next': 'https://evil.example/'})
+        self.assertRedirects(response, '/dashboard/variants/', fetch_redirect_response=False)
+        pending.refresh_from_db()
+        other.refresh_from_db()
+        self.assertTrue(pending.approved)
+        self.assertFalse(other.approved)
+
     def test_dashboard_save_errors_delete_protection(self):
         self.client.force_login(self.staff)
         response = self.client.post('/dashboard/categories/new/', {'title_ar': 'جديد', 'slug': 'new'})

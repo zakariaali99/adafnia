@@ -1,1 +1,69 @@
-{% extends 'dashboard/base.html' %}{% block content %}<h1>{{ label }}</h1><p>الصور: JPEG / PNG / WebP حتى 5 ميغابايت؛ تُحفظ نسخة WebP بحجم أقصى 1920 بكسل. الملفات الفنية: PDF حتى 32 ميغابايت؛ الشهادات وملف الإعدادات حتى 10 ميغابايت. احفظ المقاسات المعتمدة فقط بعد مراجعتها هندسياً. التوقيت المحلي: ليبيا.</p><form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}</div>{% endfor %}<button>حفظ</button> <a href="/dashboard/{{ section }}/">إلغاء</a></form>{% endblock %}
+{% extends 'dashboard/base.html' %}
+{% block crumbs %}<a href="/dashboard/">الرئيسية</a><span aria-hidden="true">/</span>{% if section != 'settings' %}<a href="/dashboard/{{ section }}/">{{ label }}</a><span aria-hidden="true">/</span>{% endif %}<b>{% if section == 'settings' %}{{ label }}{% elif object %}تعديل{% else %}{{ add_label|default:'إضافة' }}{% endif %}</b>{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% include 'dashboard/icon.html' with name=icon %}{% if section == 'settings' %}{{ label }}{% elif object %}{{ object.title_ar|default:object }}{% else %}{{ add_label|default:'إضافة' }}{% endif %}</h1>
+</div>
+
+<form class="panel form" method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert bad" role="alert">{% include 'dashboard/icon.html' with name='alert' %}<span>{{ form.non_field_errors|join:' ' }}</span></div>{% endif %}
+
+  <div class="fields">
+  {% for kind, fields in rows %}
+    {% for field in fields %}
+      {% if field.widget_type == 'checkbox' %}
+        <div class="field wide switch-field">
+          <label class="switch">{{ field }}<span class="track" aria-hidden="true"></span><span>{{ field.label }}</span></label>
+          {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+          {{ field.errors }}
+        </div>
+      {% else %}
+        <div class="field {% if kind == 'wide' %}wide{% endif %}{% if field.errors %} has-error{% endif %}">
+          {{ field.label_tag }}
+          {% if field.widget_type == 'clearablefile' or field.widget_type == 'file' %}
+            <div class="file">
+              {% if field.value and field.value.url %}
+                <div class="current">
+                  {% if field.name == 'image' %}<img src="{{ field.value.url }}" alt="">{% else %}{% include 'dashboard/icon.html' with name='doc' %}{% endif %}
+                  <span><a href="{{ field.value.url }}" target="_blank" rel="noopener">{% if field.name == 'image' %}الصورة الحالية{% else %}الملف الحالي{% endif %}</a>
+                  {% if not field.field.required %}<label class="clear"><input type="checkbox" name="{{ field.html_name }}-clear" id="{{ field.auto_id }}-clear"> إزالة</label>{% endif %}</span>
+                </div>
+              {% endif %}
+              <label class="pick-file">
+                <input type="file" name="{{ field.html_name }}" id="{{ field.auto_id }}" {% if field.name == 'image' %}accept="image/jpeg,image/png,image/webp"{% else %}accept="application/pdf"{% endif %}>
+                <span class="btn soft">{% include 'dashboard/icon.html' with name='doc' %}{% if field.value %}استبدال{% else %}اختر ملفاً{% endif %}</span>
+                <span class="file-name" data-empty="لم يتم اختيار ملف">لم يتم اختيار ملف</span>
+              </label>
+            </div>
+            <small class="help">{% if field.name == 'image' %}JPEG أو PNG أو WebP حتى 5 ميغابايت. تُحفظ تلقائياً بصيغة WebP وعرض أقصى 1920 بكسل.{% elif section == 'certificates' or section == 'settings' %}PDF حتى 10 ميغابايت.{% else %}PDF حتى 32 ميغابايت.{% endif %}</small>
+          {% else %}
+            {{ field }}
+            {% if field.help_text %}<small class="help">{{ field.help_text }}</small>{% endif %}
+          {% endif %}
+          {{ field.errors }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  </div>
+
+  {% if section == 'variants' %}<p class="hint">{% include 'dashboard/icon.html' with name='alert' %}فعّل «معتمد للنشر» فقط بعد مراجعة المقاس هندسياً.</p>{% endif %}
+  {% if section == 'news' %}<p class="hint">{% include 'dashboard/icon.html' with name='news' %}الموعد بتوقيت ليبيا. إذا كان في المستقبل يُنشر الخبر تلقائياً في موعده.</p>{% endif %}
+
+  <div class="form-actions">
+    <button class="btn" type="submit">{% include 'dashboard/icon.html' with name='check' %}حفظ</button>
+    <a class="btn ghost" href="/dashboard/{% if section != 'settings' %}{{ section }}/{% endif %}">إلغاء</a>
+    {% if object and object.pk and section != 'settings' %}<a class="btn ghost danger push" href="/dashboard/{{ section }}/{{ object.pk }}/delete/">{% include 'dashboard/icon.html' with name='trash' %}حذف</a>{% endif %}
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.pick-file input').forEach(function (input) {
+    var name = input.parentNode.querySelector('.file-name');
+    input.addEventListener('change', function () { name.textContent = input.files.length ? input.files[0].name : name.dataset.empty; name.classList.toggle('chosen', input.files.length > 0); });
+  });
+</script>
+{% endblock %}

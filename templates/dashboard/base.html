@@ -1,20 +1,60 @@
 {% load static %}<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>إدارة الدافنية</title>
-  <link rel="icon" href="{% static 'img/logo.png' %}">
-  <link rel="stylesheet" href="{% static 'dashboard.css' %}">
-  <link rel="stylesheet" href="{% static 'dashboard-shell.css' %}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>{% if label %}{{ label }} | {% endif %}إدارة الدافنية</title>
+  <link rel="icon" href="{% static 'img/mark.png' %}">
+  <link rel="preload" href="{% static 'fonts/almarai/almarai-arabic-400-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
-<body>
-  <header>
-    <a class="dashboard-brand" href="/dashboard/"><img src="{% static 'img/logo.png' %}" alt="" width="48" height="48"><span><b>الدافنية</b><small>إدارة الموقع والمحتوى</small></span></a>
-    <a class="view-site" href="/ar/" target="_blank" rel="noopener">عرض الموقع ↗</a>
-    {% if user.is_authenticated %}<form action="/dashboard/logout/" method="post">{% csrf_token %}<span class="editor-name">{{ user.get_full_name|default:user.username }}</span><button>تسجيل الخروج</button></form>{% endif %}
-  </header>
-  <div class="layout">
-    {% if sections %}<nav aria-label="إدارة المحتوى"><p class="nav-heading">مساحة العمل</p><a href="/dashboard/" {% if request.path == '/dashboard/' %}aria-current="page"{% endif %}>نظرة عامة</a>{% for key,label in sections %}<a href="/dashboard/{{ key }}/" {% if section == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}<p class="nav-footer">ADAFNIA<br>المحتوى بالعربية والإنجليزية</p></nav>{% endif %}
-    <main>{% for message in messages %}<p role="status" class="notice">{{ message }}</p>{% endfor %}{% block content %}{% endblock %}</main>
+<body class="{% block body_class %}{% endblock %}">
+{% block shell %}
+  <aside class="side" id="side">
+    <a class="side-brand" href="/dashboard/">
+      <img src="{% static 'img/mark-white.png' %}" alt="" width="40" height="40">
+      <span><b>الدافنية</b><small>لوحة الإدارة</small></span>
+    </a>
+    <nav aria-label="أقسام لوحة الإدارة">
+      <a href="/dashboard/" {% if request.path == '/dashboard/' %}aria-current="page"{% endif %}>{% include 'dashboard/icon.html' with name='home' %}الرئيسية</a>
+      {% for key, name, icon_name in sections %}
+        {% if key == 'products' %}<p class="nav-group">المحتوى</p>{% elif key == 'settings' %}<p class="nav-group">الموقع</p>{% endif %}
+        <a href="/dashboard/{{ key }}/{% if key == 'settings' %}new/{% endif %}" {% if section == key %}aria-current="page"{% endif %}>{% include 'dashboard/icon.html' with name=icon_name %}{{ name }}</a>
+      {% endfor %}
+    </nav>
+    <a class="side-site" href="/ar/" target="_blank" rel="noopener">{% include 'dashboard/icon.html' with name='eye' %}عرض الموقع</a>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="page">
+    <header class="top">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="القائمة" aria-controls="side" aria-expanded="false">{% include 'dashboard/icon.html' with name='menu' %}</button>
+      <div class="crumbs">{% block crumbs %}{% endblock %}</div>
+      {% if user.is_authenticated %}
+      <form class="user" action="/dashboard/logout/" method="post">{% csrf_token %}
+        <span class="avatar" aria-hidden="true">{{ user.get_full_name|default:user.username|slice:':1'|upper }}</span>
+        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+        <button class="icon-btn" type="submit" title="تسجيل الخروج" aria-label="تسجيل الخروج">{% include 'dashboard/icon.html' with name='out' %}</button>
+      </form>
+      {% endif %}
+    </header>
+    <main id="main">
+      {% for message in messages %}<p role="status" class="toast">{% include 'dashboard/icon.html' with name='check' %}{{ message }}</p>{% endfor %}
+      {% block content %}{% endblock %}
+    </main>
   </div>
-</body></html>
+  <script>
+    (function () {
+      var btn = document.getElementById('menuBtn'), scrim = document.getElementById('scrim');
+      function set(open) { document.body.classList.toggle('nav-open', open); btn.setAttribute('aria-expanded', String(open)); }
+      btn.addEventListener('click', function () { set(!document.body.classList.contains('nav-open')); });
+      scrim.addEventListener('click', function () { set(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) { set(false); btn.focus(); } });
+    })();
+  </script>
+{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

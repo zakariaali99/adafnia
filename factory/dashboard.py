@@ -4,12 +4,13 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
 from django.db.models import Q, ProtectedError
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import redirect_to_login
 from django.utils.text import slugify
 from uuid import uuid4
 from datetime import timedelta
+from decimal import Decimal, InvalidOperation
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils import timezone
@@ -19,7 +20,7 @@ from . import models
 
 REGISTRY = {
     'categories': (models.Category, 'التصنيفات'), 'products': (models.Product, 'المنتجات'),
-    'variants': (models.ProductVariant, 'المقاسات المعتمدة'), 'news': (models.NewsArticle, 'الأخبار والجدولة'),
+    'variants': (models.ProductVariant, 'المقاسات'), 'news': (models.NewsArticle, 'الأخبار والجدولة'),
     'projects': (models.Project, 'المشاريع'), 'certificates': (models.Certificate, 'الشهادات والصلاحية'),
     'resources': (models.Resource, 'الملفات الفنية'), 'branches': (models.Branch, 'الفروع'),
     'enquiries': (models.Enquiry, 'طلبات العملاء'), 'settings': (models.SiteSettings, 'إعدادات الموقع'),
@@ -49,8 +50,22 @@ class DashboardLogin(LoginView):
             return self.form_invalid(form)
         return super().form_valid(form)
 
+# Per-section presentation: nav icon, the "add" button label (None = no add button) and the nav group.
+META = {
+    'products': ('box', 'منتج جديد', 'content'), 'categories': ('folder', 'عائلة جديدة', 'content'),
+    'variants': ('ruler', 'مقاس جديد', 'content'), 'news': ('news', 'خبر جديد', 'content'),
+    'projects': ('flag', 'مشروع جديد', 'content'), 'certificates': ('award', 'شهادة جديدة', 'content'),
+    'resources': ('doc', 'ملف جديد', 'content'), 'branches': ('pin', 'مركز بيع جديد', 'content'),
+    'enquiries': ('inbox', None, 'inbox'), 'settings': ('gear', None, 'site'),
+}
+NAV_ORDER = ['enquiries', 'products', 'variants', 'categories', 'news', 'projects', 'certificates', 'resources', 'branches', 'settings']
+
 def context():
-    return {'sections': [(key, label) for key, (_, label) in REGISTRY.items()]}
+    return {'sections': [(key, REGISTRY[key][1], META[key][0]) for key in NAV_ORDER]}
+
+def section_context(section):
+    icon, add_label, _ = META[section]
+    return {**context(), 'section': section, 'label': REGISTRY[section][1], 'icon': icon, 'add_label': add_label}
 
 FIELD_LABELS = {
     'is_factory': 'سجل المصنع (العنوان من إعدادات الموقع)',
@@ -71,6 +86,23 @@ FIELD_LABELS = {
     'name': 'اسم العميل', 'subject': 'الموضوع', 'message': 'الرسالة',
 }
 
+WIDE_WIDGETS = {'checkbox', 'clearablefile', 'file'}
+
+def form_rows(form):
+    """Group a form into rows: Arabic/English twins sit side by side, files and switches take a full row."""
+    rows, fields = [], list(form)
+    i = 0
+    while i < len(fields):
+        field = fields[i]
+        twin = fields[i + 1] if i + 1 < len(fields) else None
+        if field.name.endswith('_ar') and twin is not None and twin.name == field.name[:-3] + '_en':
+            rows.append(('pair', [field, twin]))
+            i += 2
+            continue
+        rows.append(('wide' if field.widget_type in WIDE_WIDGETS or field.widget_type == 'textarea' else 'single', [field]))
+        i += 1
+    return rows
+
 def optimize_image(instance, form):
     if 'image' not in form.changed_data or not form.cleaned_data.get('image'):
         return
@@ -88,7 +120,14 @@ def optimize_image(instance, form):
 def index(request):
     today = timezone.localdate()
     expiring = models.Certificate.objects.filter(is_active=True, expires_on__gte=today, expires_on__lte=today + timedelta(days=30)).order_by('expires_on')
-    return render(request, 'dashboard/index.html', {**context(), 'expiring_certificates': expiring, 'counts': [(key, label, model.objects.count()) for key, (model, label) in REGISTRY.items()]})
+    expired = models.Certificate.objects.filter(is_active=True, expires_on__lt=today).order_by('expires_on')
+    has_valid = models.Certificate.objects.filter(is_active=True).filter(Q(expires_on__gte=today) | Q(expires_on__isnull=True)).exists()
+    counts = [(key, REGISTRY[key][1], META[key][0], REGISTRY[key][0].objects.count()) for key in NAV_ORDER if key not in ('settings', 'enquiries')]
+    return render(request, 'dashboard/index.html', {**context(), 'expiring_certificates': expiring, 'expired_certificates': expired, 'no_valid_certificate': not has_valid, 'counts': counts,
+        'pending_variants': models.ProductVariant.objects.filter(approved=False).count(),
+        'draft_products': models.Product.objects.filter(is_published=False).count(),
+        'recent_enquiries': models.Enquiry.objects.select_related('product')[:5],
+        'week_enquiries': models.Enquiry.objects.filter(created_at__gte=timezone.now() - timedelta(days=7)).count()})
 
 @staff_required
 def listing(request, section):
@@ -102,9 +141,39 @@ def listing(request, section):
         search = Q()
         for field in fields & {'title_ar', 'title_en', 'name', 'subject', 'phone', 'email'}:
             search |= Q(**{field + '__icontains': q})
+        if section == 'variants':
+            search |= Q(product__title_ar__icontains=q) | Q(product__title_en__icontains=q)
+            try:
+                search |= Q(diameter_mm=Decimal(q))
+            except InvalidOperation:
+                pass
         if search:
             qs = qs.filter(search)
-    return render(request, 'dashboard/list.html', {**context(), 'section': section, 'label': label, 'q': q, 'page_obj': Paginator(qs.order_by('-pk'), 25).get_page(request.GET.get('page'))})
+    state = ''
+    if section == 'variants':
+        qs = qs.select_related('product').order_by('product__title_ar', 'diameter_mm', 'pressure_bar')
+        state = request.GET.get('state', '')
+        if state in ('pending', 'approved'):
+            qs = qs.filter(approved=state == 'approved')
+    elif section == 'products':
+        qs = qs.select_related('category').order_by('-pk')
+    elif section == 'enquiries':
+        qs = qs.select_related('product').order_by('-created_at')
+    else:
+        qs = qs.order_by('-pk')
+    per_page = 50 if section == 'variants' else 25
+    return render(request, 'dashboard/list.html', {**section_context(section), 'q': q, 'state': state,
+        'pending_count': model.objects.filter(approved=False).count() if section == 'variants' else 0,
+        'page_obj': Paginator(qs, per_page).get_page(request.GET.get('page'))})
+
+@staff_required
+def approve_variants(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    ids = [int(value) for value in request.POST.getlist('ids') if value.isdigit()]
+    updated = models.ProductVariant.objects.filter(pk__in=ids, approved=False).update(approved=True)
+    messages.success(request, f'تم اعتماد {updated} مقاساً.' if updated else 'لم يتم تحديد مقاسات غير معتمدة.')
+    return redirect(request.POST.get('next') if str(request.POST.get('next', '')).startswith('/dashboard/variants/') else '/dashboard/variants/')
 
 @staff_required
 def edit(request, section, pk=None):
@@ -119,6 +188,12 @@ def edit(request, section, pk=None):
         'expires_on': forms.DateInput(attrs={'type': 'date'}),
     })
     form = Form(request.POST or None, request.FILES or None, instance=obj)
+    form.label_suffix = ''
+    for name, bound in form.fields.items():
+        if name.endswith('_en') or name in ('phone', 'whatsapp', 'email', 'slug'):
+            bound.widget.attrs.setdefault('dir', 'ltr')
+        if isinstance(bound.widget, forms.Textarea):
+            bound.widget.attrs['rows'] = 8 if name.startswith('body') else 4
     if request.method == 'POST' and form.is_valid():
         instance = form.save(commit=False)
         optimize_image(instance, form)
@@ -133,7 +208,7 @@ def edit(request, section, pk=None):
         form.save_m2m()
         messages.success(request, 'تم الحفظ بنجاح.')
         return redirect('dashboard-list', section=section)
-    return render(request, 'dashboard/form.html', {**context(), 'form': form, 'label': label, 'section': section, 'object': obj})
+    return render(request, 'dashboard/form.html', {**section_context(section), 'form': form, 'object': obj, 'rows': form_rows(form)})
 
 @staff_required
 def delete(request, section, pk):
@@ -149,4 +224,4 @@ def delete(request, section, pk):
             return redirect('dashboard-list', section=section)
         except ProtectedError:
             error = 'لا يمكن حذف تصنيف مرتبط بمنتجات. انقل المنتجات أولاً.'
-    return render(request, 'dashboard/delete.html', {**context(), 'object': obj, 'section': section, 'label': label, 'error': error})
+    return render(request, 'dashboard/delete.html', {**section_context(section), 'object': obj, 'error': error})

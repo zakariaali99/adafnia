@@ -14,6 +14,7 @@ urlpatterns = [
     path('dashboard/login/', dashboard.DashboardLogin.as_view(), name='dashboard-login'),
     path('dashboard/logout/', LogoutView.as_view(), name='dashboard-logout'),
     path('dashboard/', dashboard.index, name='dashboard'),
+    path('dashboard/variants/approve/', dashboard.approve_variants, name='dashboard-approve-variants'),
     path('dashboard/<str:section>/', dashboard.listing, name='dashboard-list'),
     path('dashboard/<str:section>/new/', dashboard.edit, name='dashboard-create'),
     path('dashboard/<str:section>/<int:pk>/edit/', dashboard.edit, name='dashboard-edit'),

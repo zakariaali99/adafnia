@@ -1,1 +1,16 @@
-{% extends 'dashboard/base.html' %}{% block content %}<h1>حذف {{ object }}</h1><p>هل تريد حذف هذا السجل؟ حذف المنتج يحذف مقاساته المرتبطة أيضاً.</p>{% if error %}<p role="alert" class="errorlist">{{ error }}</p>{% endif %}<form method="post">{% csrf_token %}<button>تأكيد الحذف</button> <a href="/dashboard/{{ section }}/">إلغاء</a></form>{% endblock %}
+{% extends 'dashboard/base.html' %}
+{% block crumbs %}<a href="/dashboard/">الرئيسية</a><span aria-hidden="true">/</span><a href="/dashboard/{{ section }}/">{{ label }}</a><span aria-hidden="true">/</span><b>حذف</b>{% endblock %}
+{% block content %}
+<div class="panel confirm">
+  <span class="confirm-icon">{% include 'dashboard/icon.html' with name='trash' %}</span>
+  <h1>حذف «{{ object.title_ar|default:object }}»؟</h1>
+  <p>لا يمكن التراجع عن الحذف.{% if section == 'products' %} سيتم حذف مقاسات هذا المنتج أيضاً.{% endif %}</p>
+  {% if error %}<div class="alert bad" role="alert">{% include 'dashboard/icon.html' with name='alert' %}<span>{{ error }}</span></div>{% endif %}
+  <form method="post">{% csrf_token %}
+    <div class="form-actions center">
+      <button class="btn danger" type="submit">تأكيد الحذف</button>
+      <a class="btn ghost" href="/dashboard/{{ section }}/">إلغاء</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

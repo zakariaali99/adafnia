@@ -1,1 +1,71 @@
-{% extends 'dashboard/base.html' %}{% block content %}<h1>إدارة محتوى المصنع</h1><p>المقاسات لا تظهر للعامة حتى اعتمادها. الأخبار المنشورة بتاريخ مستقبلي تظهر تلقائياً في موعدها، والشهادات المنتهية تظهر في الأرشيف.</p>{% if expiring_certificates %}<section role="status" class="notice"><h2>شهادات تنتهي خلال 30 يوماً</h2>{% for certificate in expiring_certificates %}<p><a href="/dashboard/certificates/{{ certificate.pk }}/edit/">{{ certificate }}</a> · {{ certificate.expires_on|date:'Y-m-d' }}</p>{% endfor %}</section>{% endif %}<div class="cards">{% for key,label,count in counts %}<a class="card" href="/dashboard/{{ key }}/"><h2>{{ label }}</h2><p>{{ count }}</p></a>{% endfor %}</div>{% endblock %}
+{% extends 'dashboard/base.html' %}
+{% block crumbs %}<b>الرئيسية</b>{% endblock %}
+{% block content %}
+<section class="hello">
+  <div>
+    <h1>أهلاً {{ user.first_name|default:user.username }}</h1>
+    <p>من هنا تضيف المنتجات وتنشر الأخبار وتتابع طلبات العملاء.</p>
+  </div>
+  <div class="quick">
+    <a class="btn" href="/dashboard/products/new/">{% include 'dashboard/icon.html' with name='plus' %}منتج جديد</a>
+    <a class="btn soft" href="/dashboard/news/new/">{% include 'dashboard/icon.html' with name='news' %}خبر جديد</a>
+  </div>
+</section>
+
+{% if no_valid_certificate or expired_certificates or expiring_certificates or pending_variants or draft_products %}
+<section class="alerts" aria-label="تنبيهات">
+  {% if no_valid_certificate %}
+    <a class="alert bad" href="/dashboard/certificates/">{% include 'dashboard/icon.html' with name='award' %}<span><b>لا توجد شهادة جودة سارية.</b> الموقع يعرض الشهادات المنتهية في الأرشيف فقط. ارفع الشهادات المجدَّدة.</span></a>
+  {% endif %}
+  {% for certificate in expired_certificates %}
+    <a class="alert bad" href="/dashboard/certificates/{{ certificate.pk }}/edit/">{% include 'dashboard/icon.html' with name='alert' %}<span><b>{{ certificate }}</b> انتهت في {{ certificate.expires_on|date:'Y-m-d' }}. ارفع الشهادة المجدَّدة لتظهر في الموقع.</span></a>
+  {% endfor %}
+  {% if expiring_certificates %}
+    <div class="alert warn" role="status">{% include 'dashboard/icon.html' with name='award' %}<span><b>شهادات تنتهي خلال 30 يوماً</b>
+      {% for certificate in expiring_certificates %}<a href="/dashboard/certificates/{{ certificate.pk }}/edit/">{{ certificate }}</a> ({{ certificate.expires_on|date:'Y-m-d' }}){% if not forloop.last %}، {% endif %}{% endfor %}</span></div>
+  {% endif %}
+  {% if pending_variants %}
+    <a class="alert info" href="/dashboard/variants/?state=pending">{% include 'dashboard/icon.html' with name='ruler' %}<span><b>{{ pending_variants }} مقاساً بانتظار الاعتماد.</b> لا تظهر للزوار حتى يراجعها المهندس ويعتمدها.</span></a>
+  {% endif %}
+  {% if draft_products %}
+    <a class="alert info" href="/dashboard/products/">{% include 'dashboard/icon.html' with name='box' %}<span><b>{{ draft_products }} منتج غير منشور.</b> فعّل «منشور للزوار» عندما يكون جاهزاً.</span></a>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="dash-grid">
+  <section class="panel">
+    <div class="panel-head">
+      <h2>آخر طلبات العملاء</h2>
+      <a class="link" href="/dashboard/enquiries/">الكل</a>
+    </div>
+    {% if recent_enquiries %}
+      <ul class="enq">
+        {% for enquiry in recent_enquiries %}
+        <li>
+          <a href="/dashboard/enquiries/{{ enquiry.pk }}/edit/">
+            <span class="avatar soft" aria-hidden="true">{{ enquiry.name|slice:':1' }}</span>
+            <span class="enq-main"><b>{{ enquiry.name }}</b><small>{{ enquiry.subject }}{% if enquiry.product %} · {{ enquiry.product.title_ar }}{% endif %}</small></span>
+            <time datetime="{{ enquiry.created_at|date:'c' }}">{{ enquiry.created_at|timesince }}</time>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="muted small">{{ week_enquiries }} طلب خلال آخر 7 أيام.</p>
+    {% else %}
+      <div class="empty">{% include 'dashboard/icon.html' with name='inbox' %}<p>لا توجد طلبات بعد. ستظهر هنا رسائل نموذج «تواصل معنا».</p></div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>محتوى الموقع</h2></div>
+    <div class="tiles">
+      {% for key, name, icon_name, count in counts %}
+        <a class="tile" href="/dashboard/{{ key }}/">{% include 'dashboard/icon.html' with name=icon_name %}<b>{{ count }}</b><span>{{ name }}</span></a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<p class="hint">الأخبار بتاريخ مستقبلي تُنشر تلقائياً في موعدها، والشهادات المنتهية تنتقل إلى الأرشيف في الموقع.</p>
+{% endblock %}

@@ -1,1 +1,30 @@
-{% extends 'dashboard/base.html' %}{% block content %}<h1>تسجيل الدخول</h1><form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button>دخول</button></form>{% endblock %}
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block body_class %}login-page{% endblock %}
+{% block shell %}
+<main class="login">
+  <div class="login-photo" aria-hidden="true"><img src="{% static 'img/factory.webp' %}" alt=""></div>
+  <div class="login-card">
+    <img class="login-mark" src="{% static 'img/mark.png' %}" alt="" width="64" height="64">
+    <h1>أهلاً بك في لوحة الإدارة</h1>
+    <p class="muted">مصنع الدافنية للأنابيب</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert bad" role="alert">{% include 'dashboard/icon.html' with name='alert' %}<span>{{ form.non_field_errors|join:' ' }}</span></div>{% endif %}
+      <div class="field">
+        <label for="{{ form.username.id_for_label }}">اسم المستخدم</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.password.id_for_label }}">كلمة المرور</label>
+        {{ form.password }}
+        {{ form.password.errors }}
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn block" type="submit">دخول</button>
+    </form>
+    <a class="link small" href="/ar/">العودة إلى الموقع</a>
+  </div>
+</main>
+{% endblock %}

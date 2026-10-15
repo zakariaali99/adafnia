@@ -12,6 +12,9 @@
   <meta property="og:title" content="{% block og_title %}{% translated settings 'title' lang %}{% endblock %}">
   <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/factory.webp' %}">
   <link rel="alternate" hreflang="{% if is_ar %}en{% else %}ar{% endif %}" href="{{ other_lang_url }}">
+  <link rel="preload" href="{% static 'fonts/almarai/almarai-arabic-400-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{% static 'fonts/almarai/almarai-arabic-800-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
   <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -82,8 +85,8 @@
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="{% static 'vendor/gsap/gsap.min.js' %}"></script>
+  <script src="{% static 'vendor/gsap/ScrollTrigger.min.js' %}"></script>
   <script src="{% static 'js/site.js' %}"></script>
 </body>
 </html>

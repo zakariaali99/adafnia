@@ -1,1 +1,139 @@
-{% extends 'dashboard/base.html' %}{% block content %}<h1>{{ label }}</h1><a class="button" href="/dashboard/{{ section }}/new/">إضافة / تعديل الإعدادات</a><form method="get"><label>بحث <input name="q" value="{{ q }}"></label><button>بحث</button></form><div class="table-scroll"><table><thead><tr><th>المحتوى</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>{% for object in page_obj %}<tr><td>{{ object }}</td><td>{% if section == 'certificates' %}{% if object.is_expired %}منتهية · أرشيف{% elif object.is_active %}سارية{% else %}مؤرشفة{% endif %} {{ object.expires_on|default:'' }}{% elif section == 'news' %}{{ object.get_status_display }} {% if object.is_scheduled %}مجدول{% endif %} {{ object.published_at }}{% elif section == 'variants' %}{{ object.approved|yesno:'معتمد,غير معتمد' }}{% else %}{{ object.is_published|yesno:'منشور,مسودة,' }}{% endif %}</td><td><a href="/dashboard/{{ section }}/{{ object.pk }}/edit/">تعديل</a>{% if section != 'settings' %} · <a href="/dashboard/{{ section }}/{{ object.pk }}/delete/">حذف</a>{% endif %}</td></tr>{% empty %}<tr><td colspan="3">لا توجد سجلات.</td></tr>{% endfor %}</tbody></table></div><div class="pagination">{% if page_obj.has_previous %}<a href="?q={{ q|urlencode }}&page={{ page_obj.previous_page_number }}">السابق</a>{% endif %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} {% if page_obj.has_next %}<a href="?q={{ q|urlencode }}&page={{ page_obj.next_page_number }}">التالي</a>{% endif %}</div>{% endblock %}
+{% extends 'dashboard/base.html' %}
+{% block crumbs %}<a href="/dashboard/">الرئيسية</a><span aria-hidden="true">/</span><b>{{ label }}</b>{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% include 'dashboard/icon.html' with name=icon %}{{ label }}</h1>
+  {% if add_label %}<a class="btn" href="/dashboard/{{ section }}/new/">{% include 'dashboard/icon.html' with name='plus' %}{{ add_label }}</a>
+  {% elif section == 'settings' %}<a class="btn" href="/dashboard/settings/new/">{% include 'dashboard/icon.html' with name='edit' %}تعديل الإعدادات</a>{% endif %}
+</div>
+
+{% if section != 'settings' %}
+<div class="toolbar">
+  <form class="search" method="get" role="search">
+    {% include 'dashboard/icon.html' with name='search' %}
+    <label class="sr" for="q">بحث</label>
+    <input id="q" name="q" value="{{ q }}" placeholder="{% if section == 'variants' %}ابحث باسم المنتج أو القطر{% else %}ابحث…{% endif %}">
+    {% if state %}<input type="hidden" name="state" value="{{ state }}">{% endif %}
+  </form>
+  {% if section == 'variants' %}
+  <nav class="seg" aria-label="تصفية المقاسات">
+    <a href="?q={{ q|urlencode }}" {% if not state %}aria-current="true"{% endif %}>الكل</a>
+    <a href="?state=pending&q={{ q|urlencode }}" {% if state == 'pending' %}aria-current="true"{% endif %}>بانتظار الاعتماد{% if pending_count %} <span class="count">{{ pending_count }}</span>{% endif %}</a>
+    <a href="?state=approved&q={{ q|urlencode }}" {% if state == 'approved' %}aria-current="true"{% endif %}>معتمدة</a>
+  </nav>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if section == 'variants' %}<form method="post" action="/dashboard/variants/approve/" id="approveForm">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">{% endif %}
+<div class="panel flush">
+  {% if page_obj.object_list %}
+  <div class="table-scroll">
+  <table class="rows">
+    <thead><tr>
+      {% if section == 'variants' %}
+        <th class="pick"><input type="checkbox" id="pickAll" aria-label="تحديد الكل"></th>
+        <th>المنتج</th><th class="num">القطر</th><th class="num">الضغط</th><th class="num">SDR</th><th class="num">السماكة</th><th class="num">الوزن</th>
+      {% elif section == 'enquiries' %}
+        <th>العميل</th><th>الموضوع</th><th>التاريخ</th>
+      {% else %}
+        <th>{% if section == 'settings' %}الإعدادات{% else %}العنوان{% endif %}</th>
+      {% endif %}
+      {% if section != 'enquiries' and section != 'settings' %}<th>الحالة</th>{% endif %}
+      <th class="act"><span class="sr">إجراءات</span></th>
+    </tr></thead>
+    <tbody>
+    {% for object in page_obj %}
+      <tr>
+        {% if section == 'variants' %}
+          <td class="pick">{% if not object.approved %}<input type="checkbox" name="ids" value="{{ object.pk }}" aria-label="تحديد Ø {{ object.diameter_mm|floatformat:'-2u' }}">{% endif %}</td>
+          <td>{{ object.product.title_ar }}</td>
+          <td class="num"><bdi>Ø {{ object.diameter_mm|floatformat:'-2u' }}</bdi></td>
+          <td class="num">{% if object.pressure_bar %}<bdi>PN {{ object.pressure_bar|floatformat:'-2u' }}</bdi>{% else %}—{% endif %}</td>
+          <td class="num">{{ object.sdr|floatformat:'-2u'|default:'—' }}</td>
+          <td class="num">{{ object.wall_mm|floatformat:'-2u'|default:'—' }}</td>
+          <td class="num">{{ object.weight_kg_m|floatformat:'-3u'|default:'—' }}</td>
+          <td>{% if object.approved %}<span class="pill ok">معتمد</span>{% else %}<span class="pill warn">بانتظار الاعتماد</span>{% endif %}</td>
+        {% elif section == 'enquiries' %}
+          <td><a class="title" href="/dashboard/enquiries/{{ object.pk }}/edit/"><b>{{ object.name }}</b><small dir="ltr">{{ object.phone }}</small></a></td>
+          <td>{{ object.subject }}{% if object.product %}<small class="block muted">{{ object.product.title_ar }}</small>{% endif %}</td>
+          <td class="muted nowrap">{{ object.created_at|date:'Y-m-d H:i' }}</td>
+        {% else %}
+          <td>
+            <a class="title" href="/dashboard/{{ section }}/{% if section == 'settings' %}new{% else %}{{ object.pk }}/edit{% endif %}/">
+              {% if section == 'products' or section == 'news' or section == 'projects' %}
+                <span class="thumb">{% if object.image %}<img src="{{ object.image.url }}" alt="" loading="lazy">{% else %}{% include 'dashboard/icon.html' with name=icon %}{% endif %}</span>
+              {% endif %}
+              <span><b>{{ object.title_ar|default:object }}</b>
+                <small>{% if section == 'products' %}{{ object.category.title_ar }}{% elif section == 'news' %}{{ object.published_at|date:'Y-m-d' }}{% elif section == 'projects' %}{{ object.location_ar }}{% if object.year %} · {{ object.year }}{% endif %}{% elif section == 'certificates' %}{% if object.expires_on %}حتى {{ object.expires_on|date:'Y-m-d' }}{% endif %}{% elif section == 'branches' %}<span dir="ltr">{{ object.phone }}</span>{% elif object.title_en %}{{ object.title_en }}{% endif %}</small>
+              </span>
+            </a>
+          </td>
+          {% if section != 'settings' %}
+          <td>
+            {% if section == 'certificates' %}
+              {% if object.is_expired %}<span class="pill bad">منتهية</span>{% elif object.is_active %}<span class="pill ok">سارية</span>{% else %}<span class="pill">مؤرشفة</span>{% endif %}
+            {% elif section == 'news' %}
+              {% if object.is_scheduled %}<span class="pill info">مجدول</span>{% elif object.status == 'published' %}<span class="pill ok">{{ object.get_status_display }}</span>{% else %}<span class="pill">{{ object.get_status_display }}</span>{% endif %}
+            {% elif section == 'branches' %}
+              {% if object.is_factory %}<span class="pill info">المصنع</span>{% else %}<span class="pill ok">مركز بيع</span>{% endif %}
+            {% elif section == 'products' or section == 'projects' %}
+              {% if object.is_published %}<span class="pill ok">منشور</span>{% else %}<span class="pill">مسودة</span>{% endif %}
+            {% else %}<span class="muted">—</span>{% endif %}
+          </td>
+          {% endif %}
+        {% endif %}
+        <td class="act">
+          <a class="icon-btn" href="/dashboard/{{ section }}/{% if section == 'settings' %}new{% else %}{{ object.pk }}/edit{% endif %}/" title="{% if section == 'enquiries' %}عرض{% else %}تعديل{% endif %}" aria-label="{% if section == 'enquiries' %}عرض{% else %}تعديل{% endif %}">{% if section == 'enquiries' %}{% include 'dashboard/icon.html' with name='eye' %}{% else %}{% include 'dashboard/icon.html' with name='edit' %}{% endif %}</a>
+          {% if section != 'settings' %}<a class="icon-btn danger" href="/dashboard/{{ section }}/{{ object.pk }}/delete/" title="حذف" aria-label="حذف">{% include 'dashboard/icon.html' with name='trash' %}</a>{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+    <div class="empty">{% include 'dashboard/icon.html' with name=icon %}<p>{% if q %}لا توجد نتائج لـ «{{ q }}».{% else %}لا يوجد شيء هنا بعد.{% endif %}</p>{% if add_label and not q %}<a class="btn soft" href="/dashboard/{{ section }}/new/">{% include 'dashboard/icon.html' with name='plus' %}{{ add_label }}</a>{% endif %}</div>
+  {% endif %}
+</div>
+
+{% if section == 'variants' %}
+  {% if pending_count %}
+  <div class="bulk" id="bulkBar" hidden>
+    <span id="bulkCount"></span>
+    <button class="btn" type="submit">{% include 'dashboard/icon.html' with name='check' %}اعتماد المحدد</button>
+  </div>
+  {% endif %}
+</form>
+{% endif %}
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pager" aria-label="الصفحات">
+  {% if page_obj.has_previous %}<a class="btn soft" href="?q={{ q|urlencode }}{% if state %}&state={{ state }}{% endif %}&page={{ page_obj.previous_page_number }}">السابق</a>{% endif %}
+  <span>صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn soft" href="?q={{ q|urlencode }}{% if state %}&state={{ state }}{% endif %}&page={{ page_obj.next_page_number }}">التالي</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if section == 'variants' %}
+<script>
+  (function () {
+    var all = document.getElementById('pickAll'), bar = document.getElementById('bulkBar'), count = document.getElementById('bulkCount');
+    if (!all || !bar) return;
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('input[name="ids"]'));
+    if (!boxes.length) { all.disabled = true; }
+    function update() {
+      var n = boxes.filter(function (b) { return b.checked; }).length;
+      bar.hidden = n === 0;
+      count.textContent = 'المحدد: ' + n;
+      all.checked = n > 0 && n === boxes.length;
+      all.indeterminate = n > 0 && n < boxes.length;
+    }
+    all.addEventListener('change', function () { boxes.forEach(function (b) { b.checked = all.checked; }); update(); });
+    boxes.forEach(function (b) { b.addEventListener('change', update); });
+  })();
+</script>
+{% endif %}
+{% endblock %}
