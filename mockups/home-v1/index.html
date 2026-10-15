@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مصنع الدافنية لأنابيب PE100 | ADAFNIA</title>
+<meta name="description" content="مصنع الدافنية في مصراتة: أنابيب بولي إيثيلين PE100 للري ومياه الشرب والبنية التحتية، بأقطار من 20 إلى 1600 مم وضغوط من 4 إلى 25 بار.">
+<link rel="icon" href="assets/mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Design tokens: the whole system lives here ============ */
+:root{
+  /* colour: 8 tokens, nothing else in the file */
+  --ink:#0E1A26;      /* headings, dark chapter */
+  --text:#34424F;     /* body */
+  --muted:#6A7782;    /* captions, meta */
+  --line:#D8DDE1;     /* hairlines */
+  --paper:#F4F5F3;    /* page */
+  --white:#FFFFFF;
+  --blue:#2860B0;     /* from the logo */
+  --water:#20B8E8;    /* from the logo drop */
+  --warn:#9A6A12;     /* archival / pending states */
+
+  /* type: one family (Arabic + Latin), one mono for numbers */
+  --sans:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --t-xs:14px; --t-s:15px; --t-m:17px; --t-l:21px; --t-xl:28px; --t-2xl:40px; --t-3xl:clamp(32px,3.9vw,56px);
+
+  /* space: 8 steps */
+  --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:40px; --s6:64px; --s7:104px; --s8:160px;
+
+  --r:2px;            /* the only radius */
+  --wrap:1280px;
+  --gutter:clamp(16px,4vw,48px);
+  --ease:cubic-bezier(.2,.7,.1,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);font-size:var(--t-m);line-height:1.85;color:var(--text);background:var(--paper);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{color:var(--ink);font-weight:600;line-height:1.3;letter-spacing:0}
+h1{font-size:var(--t-3xl);line-height:1.25;font-weight:600}
+h2{font-size:var(--t-2xl)}
+h3{font-size:var(--t-l);font-weight:600;line-height:1.5}
+p{max-width:62ch}
+.num,.mono{font-family:var(--mono);font-feature-settings:"tnum" 1;direction:ltr;unicode-bidi:isolate}
+h1 .num,h2 .num,.lead .num,p .num{font-family:inherit}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gutter)}
+.link{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px;text-decoration-color:var(--blue);font-weight:500;transition:color .2s}
+.link:hover{color:var(--blue)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);height:52px;padding-inline:var(--s4);border-radius:var(--r);font:500 var(--t-m)/1 var(--sans);text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:var(--white);cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.btn:hover{background:var(--blue);border-color:var(--blue)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--blue);background:transparent}
+.eyebrow{font-size:var(--t-xs);color:var(--muted);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+.eyebrow .num{color:var(--blue)}
+.lead{font-size:var(--t-l);line-height:1.75;color:var(--text)}
+.caption{font-size:var(--t-xs);color:var(--muted);line-height:1.6}
+:focus-visible{outline:2px solid var(--water);outline-offset:3px}
+.skip{position:absolute;inset-inline-start:var(--s3);top:-60px;background:var(--ink);color:var(--white);padding:var(--s2) var(--s3);z-index:200}
+.skip:focus{top:var(--s3)}
+
+/* ============ Section scaffolding ============ */
+section{padding-block:var(--s7)}
+.sec-head{display:grid;grid-template-columns:220px 1fr;gap:var(--s5);margin-bottom:var(--s6);align-items:start}
+.sec-index{display:flex;flex-direction:column;gap:var(--s1);padding-top:12px;border-top:1px solid var(--ink)}
+.sec-index .num{font-size:var(--t-xs);color:var(--blue)}
+.sec-index span:last-child{font-size:var(--t-s);color:var(--ink);font-weight:500}
+.sec-head h2{margin-bottom:var(--s3)}
+
+/* the water line: one pipe down the inline-start edge, fills as you read */
+.pipe{position:fixed;top:0;bottom:0;inset-inline-start:max(8px,calc((100vw - var(--wrap))/2 - 28px));width:2px;background:var(--line);z-index:40;pointer-events:none}
+.pipe i{position:absolute;inset-inline:0;top:0;height:100%;background:linear-gradient(var(--blue),var(--water));transform-origin:top;transform:scaleY(0)}
+@media (max-width:1100px){.pipe{display:none}}
+
+/* ============ Header ============ */
+header.site{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;height:76px;gap:var(--s4)}
+.brand{display:flex;align-items:center;gap:var(--s3);text-decoration:none}
+.brand img{height:40px;width:auto}
+.brand b{display:block;font-size:var(--t-m);color:var(--ink);font-weight:600;line-height:1.2}
+.brand small{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.14em;direction:ltr;text-align:end}
+nav.main ul{display:flex;gap:var(--s5);list-style:none}
+nav.main a{text-decoration:none;font-size:var(--t-s);color:var(--text);padding-block:var(--s2);border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+nav.main a:hover{color:var(--ink);border-color:var(--ink)}
+.h-actions{display:flex;align-items:center;gap:var(--s4)}
+.h-actions .lang{font-family:var(--mono);font-size:var(--t-xs);text-decoration:none;color:var(--muted)}
+.h-actions .btn{height:44px;font-size:var(--t-s)}
+.menu-btn{display:none;background:none;border:0;width:44px;height:44px;cursor:pointer;position:relative}
+.menu-btn span{position:absolute;inset-inline:10px;height:1.5px;background:var(--ink);transition:transform .3s var(--ease)}
+.menu-btn span:first-child{top:17px}.menu-btn span:last-child{top:26px}
+body.nav-open .menu-btn span:first-child{transform:translateY(4.5px) rotate(45deg)}
+body.nav-open .menu-btn span:last-child{transform:translateY(-4.5px) rotate(-45deg)}
+
+/* ============ Hero ============ */
+.hero{padding-block:var(--s6) var(--s6)}
+.hero .wrap{display:grid;grid-template-columns:1.4fr 1fr;gap:var(--s6);align-items:center}
+.hero h1{margin-block:var(--s4) var(--s4)}
+.hero h1 .ln{display:block;white-space:nowrap}
+@media (max-width:640px){.hero h1 .ln{white-space:normal}}
+.hero .lead{margin-bottom:var(--s5)}
+.hero .actions{display:flex;gap:var(--s4);align-items:center;flex-wrap:wrap}
+.section-figure{position:relative}
+.xsec{width:100%;max-width:520px;margin-inline:auto;display:block;overflow:visible;direction:ltr}
+.xsec text{font-family:var(--mono);font-size:13px;fill:var(--muted)}
+.xsec .dim{stroke:var(--ink);stroke-width:1}
+.xsec .val{fill:var(--ink);font-size:15px;font-weight:500}
+.pn{display:flex;border:1px solid var(--line);border-radius:var(--r);margin-top:var(--s4);background:var(--white)}
+.pn button{flex:1;height:48px;border:0;background:none;font:500 var(--t-s)/1 var(--mono);color:var(--muted);cursor:pointer;border-inline-start:1px solid var(--line);transition:background .2s,color .2s}
+.pn button:first-child{border-inline-start:0}
+.pn button[aria-pressed="true"]{background:var(--ink);color:var(--white)}
+.pn button:hover:not([aria-pressed="true"]){color:var(--ink)}
+.lbl-s{display:block;margin-top:var(--s4);font-size:var(--t-xs);color:var(--muted)}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);margin-top:var(--s4);border-top:1px solid var(--line)}
+.readout div{padding-top:var(--s3)}
+.readout dt{font-size:var(--t-xs);color:var(--muted)}
+.readout dd{font-family:var(--mono);font-size:var(--t-xl);color:var(--ink);direction:ltr;text-align:end;line-height:1.3}
+.readout dd small{font-size:var(--t-xs);color:var(--muted);margin-inline-start:4px}
+
+/* facts */
+.facts{border-block:1px solid var(--line);background:var(--white)}
+.facts .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.facts .wrap>div{padding:var(--s5) var(--s4);border-inline-start:1px solid var(--line)}
+.facts .wrap>div:first-child{border-inline-start:0;padding-inline-start:0}
+.facts .fig{display:flex;align-items:baseline;gap:8px;line-height:1.1}
+.facts .fig .num{font-size:var(--t-2xl);color:var(--ink)}
+.facts .fig em{font-style:normal;font-size:var(--t-s);color:var(--muted)}
+.facts p{font-size:var(--t-s);color:var(--muted);margin-top:var(--s2)}
+
+/* aerial band */
+.band{position:relative;z-index:45;height:min(62vh,620px);overflow:hidden;background:var(--ink)}
+.band img{width:100%;height:115%;object-fit:cover;will-change:transform}
+.band figcaption{position:absolute;inset-inline-start:var(--gutter);bottom:var(--s4);background:var(--paper);padding:var(--s2) var(--s3);font-size:var(--t-xs);color:var(--ink)}
+
+/* ============ 01 Products ============ */
+.products-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+.product{display:grid;grid-template-rows:auto 1fr;background:var(--white);border:1px solid var(--line)}
+.product .ph{aspect-ratio:4/3;overflow:hidden;background:var(--ink)}
+.product .ph img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
+.product:hover .ph img{transform:scale(1.03)}
+.product .body{padding:var(--s5);display:flex;flex-direction:column;gap:var(--s3)}
+.product .spec{font-family:var(--mono);font-size:var(--t-xs);color:var(--blue);direction:ltr;text-align:end;letter-spacing:.02em}
+.product .body p{color:var(--text)}
+.product .body .link{margin-top:auto;align-self:flex-start}
+
+/* ============ 02 Selector ============ */
+.selector{display:grid;grid-template-columns:1fr 1.2fr;gap:var(--s6);align-items:start}
+.field{margin-bottom:var(--s5)}
+.field label,.field .lbl{display:block;font-size:var(--t-s);color:var(--ink);font-weight:500;margin-bottom:var(--s2)}
+.dia{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);background:var(--white);border-radius:var(--r)}
+.dia button{height:48px;border:0;border-inline-start:1px solid var(--line);border-top:1px solid var(--line);background:none;font:500 var(--t-s)/1 var(--mono);color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.dia button:nth-child(5n+1){border-inline-start:0}
+.dia button:nth-child(-n+5){border-top:0}
+.dia button[aria-pressed="true"]{background:var(--ink);color:var(--white)}
+.dia button:hover:not([aria-pressed="true"]){color:var(--ink)}
+.result{background:var(--white);border:1px solid var(--line);padding:var(--s5)}
+.result h3{font-family:var(--mono);font-weight:500;font-size:var(--t-xl);direction:ltr;text-align:end;margin-bottom:var(--s1)}
+.result .sub{font-size:var(--t-s);color:var(--muted);margin-bottom:var(--s4)}
+.result dl{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.result dl div{padding-block:var(--s3)}
+.result dt{font-size:var(--t-xs);color:var(--muted)}
+.result dd{font-family:var(--mono);font-size:var(--t-xl);color:var(--ink);direction:ltr;text-align:end;line-height:1.3}
+.result dd small{font-size:var(--t-xs);color:var(--muted);margin-inline-start:4px}
+.result .na{padding-block:var(--s4);color:var(--warn)}
+table.cls{width:100%;border-collapse:collapse;margin-block:var(--s4);font-size:var(--t-s)}
+table.cls th{font-weight:500;font-size:var(--t-xs);color:var(--muted);text-align:right;padding:var(--s2) 0;border-bottom:1px solid var(--ink)}
+table.cls td{padding:var(--s2) 0;border-bottom:1px solid var(--line);font-family:var(--mono);text-align:right}
+table.cls td:first-child{direction:rtl;font-family:var(--sans)}
+table.cls tr{cursor:pointer;transition:background .15s}
+table.cls tbody tr:hover{background:var(--paper)}
+table.cls tr.on td{color:var(--blue);font-weight:500}
+table.cls tr.off td{color:#B3BCC3}
+.result .actions{display:flex;gap:var(--s4);align-items:center;flex-wrap:wrap;margin-top:var(--s3)}
+.note{margin-top:var(--s4);font-size:var(--t-xs);color:var(--muted);border-inline-start:2px solid var(--warn);padding-inline-start:var(--s3)}
+
+/* ============ 03 Uses ============ */
+.uses{list-style:none;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s6);counter-reset:u}
+.uses li{display:flex;gap:var(--s4);align-items:baseline;padding-block:var(--s4);border-top:1px solid var(--line);font-size:var(--t-xl);color:var(--ink);font-weight:500;line-height:1.4}
+.uses li .num{font-size:var(--t-xs);color:var(--blue);min-width:28px}
+
+/* ============ 04 Factory (the one dark chapter) ============ */
+.dark{background:var(--ink);color:#C3CCD4}
+.dark h2,.dark h3{color:var(--white)}
+.dark .sec-index{border-color:var(--white)}
+.dark .sec-index span:last-child{color:var(--white)}
+.dark .sec-index .num,.dark .eyebrow .num{color:var(--water)}
+.dark .lead{color:#C3CCD4}
+.factory-split{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6);align-items:center;margin-bottom:var(--s7)}
+.factory-split figure{overflow:hidden}
+.factory-split img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.factory-split figcaption{font-size:var(--t-xs);color:#8796A3;margin-top:var(--s2)}
+.timeline{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s4);padding-top:var(--s5)}
+.timeline::before,.timeline .fill{content:"";position:absolute;top:0;inset-inline:0;height:2px;background:#26384A}
+.timeline .fill{background:linear-gradient(to left,var(--blue),var(--water));transform-origin:right;transform:scaleX(0)}
+.timeline li{list-style:none;position:relative}
+.timeline li::before{content:"";position:absolute;top:calc(-1 * var(--s5) - 5px);inset-inline-start:0;width:12px;height:12px;border-radius:50%;background:var(--ink);border:2px solid var(--water)}
+.timeline .yr{display:block;font-family:var(--mono);font-size:var(--t-xl);color:var(--white);margin-bottom:var(--s2)}
+.timeline p{font-size:var(--t-s);line-height:1.7}
+.process{margin-top:var(--s7);display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid #26384A}
+.process li{list-style:none;padding:var(--s4) var(--s3) 0 0;border-inline-start:1px solid #26384A;padding-inline-start:var(--s3)}
+.process li:first-child{border-inline-start:0;padding-inline-start:0}
+.process .num{font-size:var(--t-xs);color:var(--water)}
+.process b{display:block;color:var(--white);font-weight:500;font-size:var(--t-m);margin-block:var(--s1)}
+.process span{font-size:var(--t-xs);line-height:1.7;display:block}
+
+/* ============ 05 Quality ============ */
+.quality{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6)}
+.tests h3{margin-bottom:var(--s3);font-size:var(--t-m)}
+.tests ul{list-style:none;margin-bottom:var(--s5)}
+.tests li{padding-block:var(--s2);border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:var(--s3);font-size:var(--t-m)}
+.tests li .mono{font-size:var(--t-xs);color:var(--muted)}
+.certs{border-top:1px solid var(--ink)}
+.cert{display:grid;grid-template-columns:1fr auto;gap:var(--s3);padding-block:var(--s4);border-bottom:1px solid var(--line)}
+.cert b{font-family:var(--mono);font-weight:500;font-size:var(--t-l);color:var(--ink);direction:ltr;text-align:end;display:block}
+.cert p{font-size:var(--t-s);color:var(--muted)}
+.cert .state{align-self:center;font-size:var(--t-xs);color:var(--warn);border:1px solid currentColor;padding:2px var(--s2);border-radius:var(--r);white-space:nowrap}
+
+/* ============ 06 Projects ============ */
+.projects{list-style:none;border-top:1px solid var(--ink)}
+.projects li{display:grid;grid-template-columns:60px 1fr 200px;gap:var(--s4);align-items:baseline;padding-block:var(--s4);border-bottom:1px solid var(--line);transition:padding .3s var(--ease)}
+.projects li:hover{padding-inline-start:var(--s3)}
+.projects .num{font-size:var(--t-xs);color:var(--blue)}
+.projects h3{font-size:var(--t-xl);font-weight:500}
+.projects .city{font-size:var(--t-s);color:var(--muted);text-align:end}
+
+/* ============ 07 News ============ */
+.news{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5)}
+.news article{border-top:1px solid var(--ink);padding-top:var(--s3)}
+.news .ph{aspect-ratio:3/2;overflow:hidden;margin-bottom:var(--s3);background:var(--line)}
+.news .ph img{width:100%;height:100%;object-fit:cover}
+.news time{font-family:var(--mono);font-size:var(--t-xs);color:var(--muted)}
+.news h3{margin-block:var(--s1) var(--s2)}
+.sample{display:inline-block;font-size:12px;color:var(--warn);border:1px solid currentColor;padding:0 6px;border-radius:var(--r);margin-inline-start:var(--s2)}
+
+/* ============ 08 Contact ============ */
+.contact{display:grid;grid-template-columns:1fr 1.4fr;gap:var(--s6)}
+.quote{background:var(--ink);color:#C3CCD4;padding:var(--s5)}
+.quote h3{color:var(--white);font-size:var(--t-xl);margin-bottom:var(--s3)}
+.quote .btn{background:var(--water);border-color:var(--water);color:var(--ink);margin-top:var(--s4);width:100%}
+.quote .btn:hover{background:var(--white);border-color:var(--white)}
+.quote .addr{margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid #26384A;font-size:var(--t-s)}
+.quote .addr b{color:var(--white);font-weight:500;display:block}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--s5)}
+.branch{padding-block:var(--s4);border-top:1px solid var(--line)}
+.branch .city{font-size:var(--t-xs);color:var(--blue);font-weight:500}
+.branch h3{font-size:var(--t-m);margin-block:2px var(--s1)}
+.branch p{font-size:var(--t-s);color:var(--muted);margin-bottom:var(--s2)}
+.branch .tels{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4)}
+.branch .tels a{font-family:var(--mono);font-size:var(--t-s);color:var(--ink);text-decoration:none;direction:ltr;border-bottom:1px solid var(--line)}
+.branch .tels a:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ============ Footer ============ */
+footer.site{background:var(--ink);color:#8796A3;padding-block:var(--s6) var(--s4);font-size:var(--t-s)}
+footer.site .top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:var(--s6);padding-bottom:var(--s6);border-bottom:1px solid #26384A}
+footer.site img{height:72px;width:auto;margin-bottom:var(--s3)}
+footer.site h4{color:var(--white);font-weight:500;font-size:var(--t-s);margin-bottom:var(--s3)}
+footer.site ul{list-style:none}
+footer.site li{margin-bottom:var(--s1)}
+footer.site a{text-decoration:none}
+footer.site a:hover{color:var(--white)}
+footer.site .bottom{display:flex;justify-content:space-between;padding-top:var(--s4);font-size:var(--t-xs);flex-wrap:wrap;gap:var(--s3)}
+
+/* ============ Intro ============ */
+.intro{position:fixed;inset:0;z-index:100;background:var(--paper);display:grid;place-items:center}
+.intro .stage{position:relative;width:min(240px,50vw);aspect-ratio:600/552}
+.intro svg{position:absolute;inset:-60% -60% auto;width:220%;height:auto;overflow:visible;left:-60%;top:-60%}
+.intro .mark{position:absolute;inset:0;width:100%;height:100%;clip-path:inset(100% 0 0 0)}
+.intro .names{position:absolute;top:calc(100% + var(--s4));inset-inline:-100px;text-align:center}
+.intro .names b{display:block;font-size:var(--t-l);color:var(--ink);font-weight:600;opacity:0}
+.intro .names span{display:block;font-family:var(--mono);font-size:var(--t-xs);letter-spacing:.4em;color:var(--blue);opacity:0}
+.intro .skip-intro{position:absolute;bottom:var(--s4);inset-inline-start:var(--gutter);background:none;border:0;font:var(--t-xs) var(--sans);color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.no-intro .intro{display:none}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(24px)}
+.no-motion .rv{opacity:1;transform:none}
+
+/* ============ Responsive ============ */
+@media (max-width:1100px){
+  nav.main ul{gap:var(--s4)}
+}
+@media (max-width:960px){
+  nav.main{position:fixed;inset:76px 0 0;background:var(--paper);transform:translateX(100%);transition:transform .45s var(--ease);padding:var(--s5) var(--gutter)}
+  body.nav-open nav.main{transform:none}
+  nav.main ul{flex-direction:column;gap:0}
+  nav.main a{display:block;font-size:var(--t-xl);color:var(--ink);padding-block:var(--s3);border-bottom:1px solid var(--line)}
+  .menu-btn{display:block}
+  .h-actions .btn{display:none}
+  .hero .wrap,.selector,.quality,.contact,.factory-split{grid-template-columns:1fr}
+  .hero .wrap{gap:var(--s5)}
+  .sec-head{grid-template-columns:1fr;gap:var(--s4)}
+  .sec-index{flex-direction:row;justify-content:space-between}
+  .facts .wrap{grid-template-columns:1fr 1fr}
+  .facts .wrap>div:nth-child(3){border-inline-start:0;padding-inline-start:0}
+  .facts .wrap>div:nth-child(n+3){border-top:1px solid var(--line)}
+  .products-grid,.news{grid-template-columns:1fr}
+  .timeline{grid-template-columns:1fr;gap:var(--s4);padding-top:0;padding-inline-start:var(--s5)}
+  .timeline::before,.timeline .fill{top:0;bottom:0;height:auto;width:2px;inset-inline-start:5px;inset-inline-end:auto}
+  .timeline .fill{transform-origin:top;transform:scaleY(0);background:linear-gradient(var(--blue),var(--water))}
+  .timeline li::before{top:8px;inset-inline-start:calc(-1 * var(--s5))}
+  .process{grid-template-columns:1fr 1fr}
+  .process li:nth-child(odd){border-inline-start:0;padding-inline-start:0}
+  .process li{padding-bottom:var(--s4);border-bottom:1px solid #26384A}
+  footer.site .top{grid-template-columns:1fr;gap:var(--s5)}
+}
+@media (max-width:640px){
+  section{padding-block:var(--s6)}
+  .uses{grid-template-columns:1fr}
+  .branches{grid-template-columns:1fr}
+  .projects li{grid-template-columns:36px 1fr}
+  .projects .city{grid-column:2;text-align:start;margin-top:-12px}
+  .dia{grid-template-columns:repeat(5,1fr)}
+  .readout dd,.result dd{font-size:var(--t-l)}
+  .band{height:46vh}
+  .facts .wrap>div{padding:var(--s4) var(--s3)}
+  .facts .fig .num{font-size:var(--t-xl)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+
+<!-- Intro: two drops fall, ripple, the mark fills like rising water, then flies to the header -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="stage">
+    <svg viewBox="0 0 600 600" aria-hidden="true">
+      <g id="ripples" fill="none" stroke-width="1.5">
+        <ellipse class="rp" cx="300" cy="420" rx="10" ry="3" stroke="#2860B0" opacity="0"/>
+        <ellipse class="rp" cx="300" cy="420" rx="10" ry="3" stroke="#2860B0" opacity="0"/>
+        <ellipse class="rp" cx="300" cy="420" rx="10" ry="3" stroke="#20B8E8" opacity="0"/>
+        <ellipse class="rp" cx="300" cy="420" rx="10" ry="3" stroke="#20B8E8" opacity="0"/>
+      </g>
+      <path id="drop1" d="M0 -34 C0 -34 -18 -8 -18 6 A18 18 0 0 0 18 6 C18 -8 0 -34 0 -34Z" fill="#2860B0" opacity="0"/>
+      <path id="drop2" d="M0 -46 C0 -46 -24 -11 -24 8 A24 24 0 0 0 24 8 C24 -11 0 -46 0 -46Z" fill="#20B8E8" opacity="0"/>
+    </svg>
+    <img class="mark" id="introMark" src="assets/mark.png" alt="">
+    <div class="names"><b id="introAr">مصنع الدافنية</b><span id="introEn">ADAFNIA</span></div>
+  </div>
+  <button class="skip-intro" id="skipIntro" type="button">تخطٍّ</button>
+</div>
+
+<div class="pipe" aria-hidden="true"><i id="pipeFill"></i></div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="مصنع الدافنية، الصفحة الرئيسية">
+      <img id="headerMark" src="assets/mark.png" alt="">
+      <span><b>مصنع الدافنية</b><small>ADAFNIA</small></span>
+    </a>
+    <nav class="main" id="nav" aria-label="القائمة الرئيسية">
+      <ul>
+        <li><a href="#products">المنتجات</a></li>
+        <li><a href="#specs">جدول المقاسات</a></li>
+        <li><a href="#factory">المصنع</a></li>
+        <li><a href="#quality">الجودة</a></li>
+        <li><a href="#projects">المشاريع</a></li>
+        <li><a href="#news">الأخبار</a></li>
+        <li><a href="#contact">تواصل</a></li>
+      </ul>
+    </nav>
+    <div class="h-actions">
+      <a class="lang" href="#" lang="en">EN</a>
+      <a class="btn" href="#contact">اطلب عرض سعر</a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav" aria-label="القائمة"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO: the product is the hero -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow rv"><span>مصنع الدافنية لأنابيب الري وملحقاتها</span><span>·</span><span>مصراتة، ليبيا</span></p>
+      <h1 class="rv"><span class="ln">أنابيب بولي إيثيلين <span class="num">PE100</span></span> <span class="ln">تُصنع في مصراتة منذ <span class="num">2006</span></span></h1>
+      <p class="lead rv">ننتج أنابيب الري ومياه الشرب والبنية التحتية بأقطار من <span class="num">20</span> إلى <span class="num">1600</span> مم، ولفّات جاهزة للتركيب، ضمن مجموعة المجري القابضة.</p>
+      <div class="actions rv">
+        <a class="btn" href="#products">تصفّح المنتجات</a>
+        <a class="link" href="#specs">جدول المقاسات</a>
+      </div>
+    </div>
+
+    <figure class="section-figure rv" aria-labelledby="xsecCap">
+      <svg class="xsec" id="xsec" viewBox="0 0 520 440" role="img" aria-label="قطاع عرضي لأنبوب بقطر 110 مم">
+        <defs>
+          <radialGradient id="waterG" cx="50%" cy="38%" r="70%">
+            <stop offset="0" stop-color="#9FE1F7"/><stop offset=".55" stop-color="#20B8E8"/><stop offset="1" stop-color="#2860B0"/>
+          </radialGradient>
+          <clipPath id="boreClip"><circle id="boreClipC" cx="260" cy="210" r="140"/></clipPath>
+        </defs>
+        <!-- pipe wall: black HDPE with the blue co-extruded stripes seen on Adafnia pipes -->
+        <circle cx="260" cy="210" r="170" fill="#141C24"/>
+        <g stroke="#2860B0" stroke-width="5" fill="none" stroke-linecap="butt">
+          <path d="M228 42 A170 170 0 0 1 292 42"/>
+          <path d="M428 178 A170 170 0 0 1 428 242"/>
+          <path d="M292 378 A170 170 0 0 1 228 378"/>
+          <path d="M92 242 A170 170 0 0 1 92 178"/>
+        </g>
+        <circle id="bore" cx="260" cy="210" r="140" fill="url(#waterG)"/>
+        <g clip-path="url(#boreClip)" opacity=".35">
+          <path id="wave" d="M60 230 Q110 214 160 230 T260 230 T360 230 T460 230 T560 230 V420 H60Z" fill="#FFFFFF"/>
+        </g>
+        <!-- dimensions, drawn like a technical drawing -->
+        <g class="dim">
+          <line x1="90" y1="410" x2="430" y2="410"/>
+          <line x1="90" y1="402" x2="90" y2="418"/><line x1="430" y1="402" x2="430" y2="418"/>
+          <line id="idL" x1="120" y1="210" x2="400" y2="210" stroke="#FFFFFF" stroke-dasharray="3 4"/>
+          <line id="sLine" x1="430" y1="210" x2="400" y2="210" stroke="#FFFFFF" stroke-width="2"/>
+        </g>
+        <text x="260" y="432" text-anchor="middle">OD 110 mm</text>
+        <text id="idTxt" class="val" x="260" y="200" text-anchor="middle" style="fill:#0E1A26">ID 90.0</text>
+        <text id="sTxt" x="444" y="200" text-anchor="start" class="val">S 10.0</text>
+      </svg>
+      <span class="lbl-s" id="heroPNl">فئة الضغط (بار)</span>
+      <div class="pn" role="group" aria-labelledby="heroPNl" id="heroPN" style="margin-top:var(--s2)"></div>
+      <dl class="readout">
+        <div><dt>سماكة الجدار</dt><dd id="hS">10.0<small>mm</small></dd></div>
+        <div><dt>القطر الداخلي</dt><dd id="hID">90.0<small>mm</small></dd></div>
+        <div><dt>الوزن</dt><dd id="hW">3.14<small>kg/m</small></dd></div>
+      </dl>
+      <figcaption class="caption" id="xsecCap" style="margin-top:var(--s3)">قطاع أنبوب PE100 بقطر خارجي <span class="num">110</span> مم. اختر الضغط لترى سماكة الجدار.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="facts">
+  <div class="wrap">
+    <div class="rv"><span class="fig"><span class="num">2006</span></span><p>سنة تأسيس المصنع</p></div>
+    <div class="rv"><span class="fig"><span class="num">20–1600</span><em>مم</em></span><p>القطر الخارجي للأنابيب</p></div>
+    <div class="rv"><span class="fig"><span class="num">4–25</span><em>بار</em></span><p>فئات الضغط الاسمي</p></div>
+    <div class="rv"><span class="fig"><span class="num">50</span><em>سنة</em></span><p>العمر التشغيلي الافتراضي للأنبوب</p></div>
+  </div>
+</div>
+
+<figure class="band" id="band">
+  <img src="assets/aerial.webp" alt="صورة جوية لمصنع الدافنية ولفّات الأنابيب في ساحته بين المزارع">
+  <figcaption>المصنع · طريق مشروع المراعي، الدافنية، مصراتة</figcaption>
+</figure>
+
+<!-- 01 PRODUCTS -->
+<section id="products">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">01</span><span>المنتجات</span></div>
+      <div>
+        <h2 class="rv">منتجاتنا</h2>
+        <p class="lead rv">كل أنابيبنا من بولي إيثيلين عالي الكثافة PE100، ويُطبع على كل أنبوب اسم المصنع والقطر وفئة الضغط.</p>
+      </div>
+    </div>
+    <div class="products-grid">
+      <article class="product rv">
+        <div class="ph"><img src="assets/pipes.webp" alt="أنابيب PE100 سوداء بخطوط زرقاء مطبوع عليها ADAFNIA FACTORY"></div>
+        <div class="body">
+          <span class="spec">Ø 20–1600 mm · PN 4–25 · SDR 41–7.4</span>
+          <h3>أنابيب مستقيمة</h3>
+          <p>بطول <span class="num">6</span> أو <span class="num">12</span> متراً، لشبكات مياه الشرب والري والمشاريع الكبيرة.</p>
+          <a class="link" href="#specs">المقاسات والمواصفات</a>
+        </div>
+      </article>
+      <article class="product rv">
+        <div class="ph"><img src="assets/coils.webp" alt="عامل يلف أنبوب PE100 في لفّة"></div>
+        <div class="body">
+          <span class="spec">Ø 20–110 mm · 50–500 m / coil</span>
+          <h3>لفّات</h3>
+          <p>لفّات بأطوال من <span class="num">50</span> إلى <span class="num">500</span> متر حسب القطر، أسهل في النقل وأسرع في التمديدات الطويلة والري.</p>
+          <a class="link" href="#specs">المقاسات والمواصفات</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 02 SPECS / SELECTOR -->
+<section id="specs" style="background:var(--white);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">02</span><span>جدول المقاسات</span></div>
+      <div>
+        <h2 class="rv">اختر المقاس</h2>
+        <p class="lead rv">حدّد القطر الخارجي وفئة الضغط لتعرف سماكة الجدار والقطر الداخلي والوزن، ثم اطلب عرض السعر بالمقاس نفسه.</p>
+      </div>
+    </div>
+    <div class="selector">
+      <div class="rv">
+        <div class="field">
+          <span class="lbl" id="diaLbl">القطر الخارجي (مم)</span>
+          <div class="dia" id="dia" role="group" aria-labelledby="diaLbl"></div>
+        </div>
+        <div class="field">
+          <span class="lbl" id="pnLbl">فئة الضغط (بار)</span>
+          <div class="pn" id="selPN" role="group" aria-labelledby="pnLbl" style="margin-top:0"></div>
+        </div>
+        <p class="caption">الجدول هنا حتى قطر <span class="num">225</span> مم. الأقطار حتى <span class="num">1600</span> مم في الكتالوج الكامل.</p>
+      </div>
+      <div class="result rv" aria-live="polite">
+        <h3 id="rTitle">Ø 110 · PN 16</h3>
+        <p class="sub" id="rSub">أنبوب PE100 · SDR 11</p>
+        <dl id="rDl">
+          <div><dt>سماكة الجدار</dt><dd id="rS"></dd></div>
+          <div><dt>القطر الداخلي</dt><dd id="rID"></dd></div>
+          <div><dt>الوزن</dt><dd id="rW"></dd></div>
+        </dl>
+        <p class="na" id="rNA" hidden>هذا المقاس غير متوفر في هذه الفئة. اختر فئة ضغط أخرى من الجدول.</p>
+        <table class="cls">
+          <thead><tr><th>الضغط</th><th>SDR</th><th>S mm</th><th>ID mm</th><th>W kg/m</th></tr></thead>
+          <tbody id="clsBody"></tbody>
+        </table>
+        <div class="actions">
+          <a class="btn" id="waBtn" href="#" target="_blank" rel="noopener">اطلب عرض سعر عبر واتساب</a>
+          <a class="link" href="#">تحميل الكتالوج (PDF)</a>
+        </div>
+        <p class="note">المصدر: كتالوج المصنع. القيم في هذا النموذج منقولة من الكتالوج وتنتظر مراجعة مهندس المصنع قبل النشر.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 USES -->
+<section id="uses">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">03</span><span>الاستخدامات</span></div>
+      <div><h2 class="rv">أين تُستخدم أنابيبنا</h2></div>
+    </div>
+    <ol class="uses">
+      <li class="rv"><span class="num">01</span>مياه الشرب</li>
+      <li class="rv"><span class="num">02</span>الري الزراعي</li>
+      <li class="rv"><span class="num">03</span>خطوط الصرف</li>
+      <li class="rv"><span class="num">04</span>تحلية المياه المالحة</li>
+      <li class="rv"><span class="num">05</span>خطوط النفط والغاز</li>
+      <li class="rv"><span class="num">06</span>الاتصالات</li>
+      <li class="rv"><span class="num">07</span>شبكات إطفاء الحريق</li>
+      <li class="rv"><span class="num">08</span>حماية كوابل الكهرباء</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 04 FACTORY (dark chapter) -->
+<section id="factory" class="dark">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">04</span><span>المصنع</span></div>
+      <div>
+        <h2 class="rv">عشرون عاماً من الإنتاج في الدافنية</h2>
+        <p class="lead rv">تأسس المصنع سنة <span class="num">2006</span> ضمن شركة الشوفان للصناعات البلاستيكية، ويعمل اليوم بنظام ورديتين بكادر فني متخصص، مع تحديث دوري لخطوط الإنتاج.</p>
+      </div>
+    </div>
+    <div class="factory-split">
+      <figure class="rv"><img src="assets/line.webp" alt="خط بثق الأنابيب داخل مصنع الدافنية"><figcaption>خط البثق داخل المصنع</figcaption></figure>
+      <div class="rv">
+        <p class="eyebrow"><span class="num">PE100</span><span>من الحبيبات إلى الأنبوب</span></p>
+        <p class="lead" style="margin-top:var(--s3)">تدخل حبيبات البولي إيثيلين إلى خط البثق، ويخرج الأنبوب ليُبرَّد بالماء ويُطبع عليه بياناته، ثم يُختبر في مختبر المصنع قبل التقطيع أو اللف.</p>
+      </div>
+    </div>
+    <ol class="timeline" id="timeline">
+      <span class="fill" id="tlFill" aria-hidden="true"></span>
+      <li class="rv"><span class="yr">1994</span><p>تأسيس مجموعة المجري القابضة.</p></li>
+      <li class="rv"><span class="yr">2006</span><p>تأسيس المصنع بطاقة من <span class="num">5</span> إلى <span class="num">6</span> طن يومياً.</p></li>
+      <li class="rv"><span class="yr">2009</span><p>ثلاثة خطوط إنتاج إضافية تضاعف الطاقة.</p></li>
+      <li class="rv"><span class="yr">2020</span><p>خطوط حديثة بتحكّم إلكتروني ومقاسات أكثر.</p></li>
+      <li class="rv"><span class="yr">2023</span><p>اعتماد أنظمة الجودة والبيئة والسلامة ISO.</p></li>
+    </ol>
+    <ol class="process">
+      <li class="rv"><span class="num">01</span><b>المادة الخام</b><span>حبيبات PE100 تُفحص كثافتها ورطوبتها.</span></li>
+      <li class="rv"><span class="num">02</span><b>البثق</b><span>صهر المادة وتشكيلها بالقطر المطلوب.</span></li>
+      <li class="rv"><span class="num">03</span><b>التبريد</b><span>أحواض ماء تثبّت الأبعاد.</span></li>
+      <li class="rv"><span class="num">04</span><b>الطباعة</b><span>اسم المصنع والقطر والضغط على كل أنبوب.</span></li>
+      <li class="rv"><span class="num">05</span><b>الاختبار</b><span>الأبعاد والشد والضغط الهيدروستاتيكي.</span></li>
+      <li class="rv"><span class="num">06</span><b>التقطيع واللف</b><span>أطوال مستقيمة أو لفّات.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 05 QUALITY -->
+<section id="quality">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">05</span><span>الجودة</span></div>
+      <div>
+        <h2 class="rv">المختبر والشهادات</h2>
+        <p class="lead rv">يملك المصنع مختبراً لمراقبة الجودة، من فحص المادة الخام حتى اختبار المنتج النهائي.</p>
+      </div>
+    </div>
+    <div class="quality">
+      <div class="tests rv">
+        <h3>اختبارات المادة الخام</h3>
+        <ul>
+          <li><span>الكثافة</span><span class="mono">Density</span></li>
+          <li><span>معدل تدفق المصهور</span><span class="mono">MFR</span></li>
+          <li><span>نسبة الرطوبة</span><span class="mono">Moisture</span></li>
+        </ul>
+        <h3>اختبارات المنتج النهائي</h3>
+        <ul>
+          <li><span>الفحص الظاهري</span><span class="mono">Visual</span></li>
+          <li><span>قياس الأبعاد</span><span class="mono">Dimensions</span></li>
+          <li><span>قوة الشد والاستطالة</span><span class="mono">Tensile / Elongation</span></li>
+          <li><span>الارتداد الحراري</span><span class="mono">Heat reversion</span></li>
+          <li><span>الضغط الهيدروستاتيكي</span><span class="mono">Hydrostatic</span></li>
+        </ul>
+      </div>
+      <div class="rv">
+        <div class="certs">
+          <div class="cert"><div><b>ISO 9001:2015</b><p>نظام إدارة الجودة · INSPECT</p></div><span class="state">بانتظار النسخة المجدَّدة</span></div>
+          <div class="cert"><div><b>ISO 14001:2015</b><p>نظام الإدارة البيئية · INSPECT</p></div><span class="state">بانتظار النسخة المجدَّدة</span></div>
+          <div class="cert"><div><b>ISO 45001:2018</b><p>نظام الصحة والسلامة المهنية · INSPECT</p></div><span class="state">بانتظار النسخة المجدَّدة</span></div>
+        </div>
+        <p class="caption" style="margin-top:var(--s3)">صدرت النسخ الحالية في مايو <span class="num">2023</span>. تُعرض الشهادات المجدَّدة بتاريخ صلاحيتها عند وصولها.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 PROJECTS -->
+<section id="projects" style="background:var(--white);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">06</span><span>المشاريع</span></div>
+      <div><h2 class="rv">مشاريع استخدمت أنابيبنا</h2></div>
+    </div>
+    <ul class="projects">
+      <li class="rv"><span class="num">01</span><h3>قاعة واغادوغو</h3><span class="city">سرت</span></li>
+      <li class="rv"><span class="num">02</span><h3>ميدان أبو ستة للفروسية</h3><span class="city">طرابلس</span></li>
+      <li class="rv"><span class="num">03</span><h3>مشروع العافية الزراعي</h3><span class="city"></span></li>
+      <li class="rv"><span class="num">04</span><h3>مركز تليل السياحي</h3><span class="city">صبراتة</span></li>
+      <li class="rv"><span class="num">05</span><h3>منتزهات وحدائق عامة</h3><span class="city">مدن ليبية مختلفة</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 07 NEWS -->
+<section id="news">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">07</span><span>الأخبار</span></div>
+      <div><h2 class="rv">آخر الأخبار</h2></div>
+    </div>
+    <div class="news">
+      <article class="rv"><div class="ph"><img src="assets/line.webp" alt=""></div><time class="num">2026 · 10</time><span class="sample">نموذج للتصميم</span><h3>عنوان الخبر يظهر هنا في سطرين كحد أقصى</h3><a class="link" href="#">اقرأ الخبر</a></article>
+      <article class="rv"><div class="ph"><img src="assets/worker.webp" alt=""></div><time class="num">2026 · 09</time><span class="sample">نموذج للتصميم</span><h3>عنوان الخبر يظهر هنا في سطرين كحد أقصى</h3><a class="link" href="#">اقرأ الخبر</a></article>
+      <article class="rv"><div class="ph"><img src="assets/aerial.webp" alt=""></div><time class="num">2026 · 08</time><span class="sample">نموذج للتصميم</span><h3>عنوان الخبر يظهر هنا في سطرين كحد أقصى</h3><a class="link" href="#">اقرأ الخبر</a></article>
+    </div>
+  </div>
+</section>
+
+<!-- 08 CONTACT -->
+<section id="contact" style="background:var(--white);border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-index"><span class="num">08</span><span>تواصل</span></div>
+      <div><h2 class="rv">مراكز البيع</h2></div>
+    </div>
+    <div class="contact">
+      <div class="quote rv">
+        <h3>اطلب عرض سعر</h3>
+        <p>أرسل لنا القطر وفئة الضغط والكمية، ويرد عليك فريق المبيعات في أقرب وقت.</p>
+        <a class="btn" href="https://wa.me/218913241428" target="_blank" rel="noopener">راسلنا عبر واتساب</a>
+        <div class="addr"><b>عنوان المصنع</b>طريق مشروع المراعي، على بعد كيلومتر من الطريق السريع، الدافنية، مصراتة</div>
+      </div>
+      <div class="branches">
+        <div class="branch rv"><span class="city">طرابلس</span><h3>مركز المبيعات 1</h3><p>طريق الدعوة الإسلامية، محل رقم 113–114</p><div class="tels"><a href="tel:+218913241428">091 324 1428</a><a href="tel:+218913591021">091 359 1021</a></div></div>
+        <div class="branch rv"><span class="city">طرابلس</span><h3>مركز المبيعات 2</h3><p>الكريمية، طريق السواني</p><div class="tels"><a href="tel:+218926160178">092 616 0178</a><a href="tel:+218918070400">091 807 0400</a><a href="tel:+218916602222">091 660 2222</a></div></div>
+        <div class="branch rv"><span class="city">مصراتة</span><h3>مركز المبيعات 1</h3><p>الطريق الدائري الرابع، مقابل كلية تقنية المعلومات</p><div class="tels"><a href="tel:+218913241640">091 324 1640</a><a href="tel:+218911130033">091 113 0033</a></div></div>
+        <div class="branch rv"><span class="city">مصراتة</span><h3>مركز المبيعات 2</h3><p>طريق المجمدات</p><div class="tels"><a href="tel:+218913865500">091 386 5500</a><a href="tel:+218913864400">091 386 4400</a></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <img src="assets/lockup-white.png" alt="مصنع الدافنية لصناعة أنابيب الري الزراعي وملحقاتها">
+        <p>أحد مصانع شركة الشوفان للصناعات البلاستيكية، ضمن مجموعة المجري القابضة.</p>
+      </div>
+      <div><h4>الموقع</h4><ul><li><a href="#products">المنتجات</a></li><li><a href="#specs">جدول المقاسات</a></li><li><a href="#quality">الجودة</a></li><li><a href="#projects">المشاريع</a></li><li><a href="#news">الأخبار</a></li></ul></div>
+      <div><h4>تواصل</h4><ul><li><a class="num" href="tel:+218913241428">091 324 1428</a></li><li><a href="https://wa.me/218913241428">واتساب</a></li><li>الدافنية، مصراتة، ليبيا</li></ul></div>
+    </div>
+    <div class="bottom"><span>© <span class="num">2026</span> مصنع الدافنية. جميع الحقوق محفوظة.</span><span class="num">ADAFNIA FACTORY FOR IRRIGATION PIPES AND FITTINGS</span></div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script>
+/* ---------- Data: PE100 dimensions transcribed from the factory catalogue (pages 7 & 10) ----------
+   [wall S mm, weight W kg/m, inner diameter ID mm]; null = not produced in that class. Pending engineer sign-off. */
+const DIAS=[20,25,32,40,50,63,75,90,110,125,140,160,180,200,225];
+const CLASSES={
+  4:{sdr:'41',rows:[null,null,null,null,null,[1.8,.364,59.4],[1.9,.457,71.2],[2.2,.643,85.6],[2.7,.943,104.6],[3.1,1.23,118.8],[3.5,1.54,133.0],[4.0,2.00,152.0],[4.4,2.49,171.2],[4.9,3.05,190.2],[5.5,3.86,214.0]]},
+  6:{sdr:'26',rows:[null,null,null,[1.8,.227,36.4],[2.0,.314,46.0],[2.5,.494,58.0],[2.9,.675,69.2],[3.5,.978,83.0],[4.2,1.43,101.6],[4.8,1.84,115.4],[5.4,2.32,129.2],[6.2,3.04,147.6],[6.9,3.79,166.2],[7.7,4.69,184.6],[8.6,5.89,207.8]]},
+  10:{sdr:'17',rows:[null,[1.8,.137,21.4],[1.9,.187,28.2],[2.4,.295,35.2],[3.0,.453,44.0],[3.8,.721,55.4],[4.5,1.02,66.0],[5.4,1.46,79.2],[6.6,2.17,96.8],[7.4,2.76,110.2],[8.3,3.46,123.4],[9.5,4.52,141.0],[10.7,5.71,158.6],[11.9,7.05,176.2],[13.4,8.93,198.2]]},
+  16:{sdr:'11',rows:[[1.9,.112,16.2],[2.3,.171,20.4],[2.9,.272,26.2],[3.7,.430,32.6],[4.6,.666,40.8],[5.8,1.05,51.4],[6.8,1.47,61.4],[8.2,2.12,73.6],[10.0,3.14,90.0],[11.4,4.08,102.2],[12.7,5.08,114.6],[14.6,6.67,130.8],[16.4,8.42,147.2],[18.2,10.4,163.6],[20.5,13.1,184.0]]},
+  20:{sdr:'9',rows:[[2.3,.133,15.4],[2.8,.200,19.4],[3.6,.327,24.8],[4.5,.509,31.0],[5.6,.788,38.8],[7.1,1.26,48.8],[8.4,1.76,58.2],[10.1,2.54,69.8],[12.3,3.78,85.4],[14.0,4.87,97.0],[15.7,6.11,108.6],[17.9,7.96,124.2],[20.1,10.1,139.8],[22.4,12.4,155.2],[25.2,15.8,174.6]]},
+  25:{sdr:'7.4',rows:[[2.8,.154,14.4],[3.5,.240,18.0],[4.4,.386,23.2],[5.5,.600,29.0],[6.9,.936,36.2],[8.6,1.47,45.8],[10.3,2.09,54.4],[12.3,3.00,65.4],[15.1,4.49,79.8],[17.1,5.77,90.8],[19.2,7.25,101.6],[21.9,9.44,116.2],[24.6,11.9,130.8],[27.4,14.8,145.2],[30.8,18.6,163.4]]}
+};
+const PNS=[4,6,10,16,20,25];
+const get=(d,p)=>CLASSES[p].rows[DIAS.indexOf(d)];
+const f1=n=>n.toFixed(1), fw=n=>n<1?n.toFixed(3):n<10?n.toFixed(2):n.toFixed(1);
+const unit=(v,u)=>`${v}<small>${u}</small>`;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hasGsap=typeof gsap!=='undefined';
+
+function segButtons(el,values,label,current,onPick){
+  el.innerHTML=values.map(v=>`<button type="button" data-v="${v}" aria-pressed="${v===current}">${label(v)}</button>`).join('');
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));onPick(+b.dataset.v);});
+}
+
+/* ---------- Hero cross-section ---------- */
+const R=170;
+function drawSection(pn){
+  const [s,w,id]=get(110,pn); const r=R*id/110;
+  const to={r};
+  const apply=()=>{
+    ['bore','boreClipC'].forEach(i=>document.getElementById(i).setAttribute('r',to.r));
+    document.getElementById('idL').setAttribute('x1',260-to.r);document.getElementById('idL').setAttribute('x2',260+to.r);
+    document.getElementById('sLine').setAttribute('x2',260+to.r);
+  };
+  if(hasGsap&&!reduce){gsap.to(to,{r,duration:.7,ease:'power3.out',onUpdate:apply,onStart(){to.r=+document.getElementById('bore').getAttribute('r')}});}
+  else apply();
+  document.getElementById('idTxt').textContent=`ID ${f1(id)}`;
+  document.getElementById('sTxt').textContent=`S ${f1(s)}`;
+  document.getElementById('hS').innerHTML=unit(f1(s),'mm');
+  document.getElementById('hID').innerHTML=unit(f1(id),'mm');
+  document.getElementById('hW').innerHTML=unit(fw(w),'kg/m');
+}
+segButtons(document.getElementById('heroPN'),PNS,v=>v,16,drawSection);
+drawSection(16);
+if(hasGsap&&!reduce) gsap.to('#wave',{x:-100,duration:4,ease:'none',repeat:-1});
+
+/* ---------- Selector ---------- */
+let sel={d:110,p:16};
+function render(){
+  const row=get(sel.d,sel.p), c=CLASSES[sel.p];
+  document.getElementById('rTitle').textContent=`Ø ${sel.d} · PN ${sel.p}`;
+  document.getElementById('rSub').textContent=`أنبوب PE100 · SDR ${c.sdr}`;
+  document.getElementById('rDl').hidden=!row; document.getElementById('rNA').hidden=!!row;
+  if(row){document.getElementById('rS').innerHTML=unit(f1(row[0]),'mm');document.getElementById('rID').innerHTML=unit(f1(row[2]),'mm');document.getElementById('rW').innerHTML=unit(fw(row[1]),'kg/m');}
+  document.getElementById('clsBody').innerHTML=PNS.map(p=>{const r=get(sel.d,p);
+    return `<tr data-p="${p}" class="${p===sel.p?'on':''} ${r?'':'off'}"><td>${p} بار</td><td>${CLASSES[p].sdr}</td><td>${r?f1(r[0]):'—'}</td><td>${r?f1(r[2]):'—'}</td><td>${r?fw(r[1]):'—'}</td></tr>`}).join('');
+  const msg=`السلام عليكم، أطلب عرض سعر لأنبوب PE100 بقطر ${sel.d} مم وضغط ${sel.p} بار (SDR ${c.sdr}). الكمية: `;
+  document.getElementById('waBtn').href='https://wa.me/218913241428?text='+encodeURIComponent(msg);
+}
+segButtons(document.getElementById('dia'),DIAS,v=>v,110,v=>{sel.d=v;render();});
+segButtons(document.getElementById('selPN'),PNS,v=>v,16,v=>{sel.p=v;render();});
+document.getElementById('clsBody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr)return;sel.p=+tr.dataset.p;
+  document.querySelectorAll('#selPN button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===sel.p));render();});
+render();
+
+/* ---------- Mobile menu ---------- */
+const menuBtn=document.getElementById('menuBtn');
+menuBtn.addEventListener('click',()=>{const o=document.body.classList.toggle('nav-open');menuBtn.setAttribute('aria-expanded',o);});
+document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',()=>{document.body.classList.remove('nav-open');menuBtn.setAttribute('aria-expanded',false);}));
+addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('nav-open')){document.body.classList.remove('nav-open');menuBtn.setAttribute('aria-expanded',false);menuBtn.focus();}});
+
+/* ---------- Scroll motion ---------- */
+function startScroll(){
+  if(!hasGsap||reduce){document.documentElement.classList.add('no-motion');return;}
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.to('#pipeFill',{scaleY:1,ease:'none',scrollTrigger:{trigger:'#main',start:'top top',end:'bottom bottom',scrub:.4}});
+  ScrollTrigger.batch('.rv',{start:'top 88%',once:true,onEnter:els=>gsap.to(els,{opacity:1,y:0,duration:.9,ease:'power3.out',stagger:.08})});
+  gsap.to('#band img',{yPercent:-12,ease:'none',scrollTrigger:{trigger:'#band',start:'top bottom',end:'bottom top',scrub:true}});
+  const vertical=matchMedia('(max-width:960px)').matches;
+  gsap.to('#tlFill',{[vertical?'scaleY':'scaleX']:1,ease:'none',scrollTrigger:{trigger:'#timeline',start:'top 80%',end:'bottom 55%',scrub:.5}});
+}
+
+/* ---------- Intro ---------- */
+const q=new URLSearchParams(location.search);
+let seen=false; try{seen=sessionStorage.getItem('adafnia-intro')==='1'}catch(e){}
+const playIntro=hasGsap&&!reduce&&!q.has('nointro')&&(q.has('intro')||!seen);
+if(!playIntro){document.documentElement.classList.add('no-intro');startScroll();}
+else{
+  try{sessionStorage.setItem('adafnia-intro','1')}catch(e){}
+  document.body.style.overflow='hidden';
+  const tl=gsap.timeline({defaults:{ease:'power2.out'},onComplete:finish});
+  const rp=gsap.utils.toArray('.rp');
+  const markEl=document.getElementById('introMark'), headMark=document.getElementById('headerMark');
+  gsap.set(headMark,{opacity:0});
+  gsap.set('#drop1',{x:282,y:-140,scale:1.7,transformOrigin:'50% 100%'});
+  gsap.set('#drop2',{x:322,y:-220,scale:1.7,transformOrigin:'50% 100%'});
+  // delta from the intro mark to the header mark, measured when the fly starts
+  const delta=()=>{const f=markEl.getBoundingClientRect(),t=headMark.getBoundingClientRect();
+    return {x:(t.left+t.width/2)-(f.left+f.width/2),y:(t.top+t.height/2)-(f.top+f.height/2),s:t.height/f.height};};
+  let d;
+  tl.to('#drop1',{opacity:1,duration:.15})
+    .to('#drop1',{y:410,duration:.55,ease:'power2.in'},'<')
+    .to('#drop1',{scaleY:.4,opacity:0,duration:.12},'>')
+    .fromTo(rp.slice(0,2),{attr:{rx:10,ry:3},opacity:.9},{attr:{rx:220,ry:44},opacity:0,duration:1.2,stagger:.18,ease:'power1.out'},'<')
+    .to('#drop2',{opacity:1,duration:.15},'-=1.15')
+    .to('#drop2',{y:405,duration:.55,ease:'power2.in'},'<')
+    .to('#drop2',{scaleY:.4,opacity:0,duration:.12},'>')
+    .fromTo(rp.slice(2),{attr:{rx:10,ry:3},opacity:.9},{attr:{rx:260,ry:52},opacity:0,duration:1.3,stagger:.18,ease:'power1.out'},'<')
+    .to(markEl,{clipPath:'inset(0% 0 0 0)',duration:1.1,ease:'power2.inOut'},'-=1.2')
+    .to('#introAr',{opacity:1,duration:.5},'-=.4')
+    .to('#introEn',{opacity:1,duration:.5},'-=.3')
+    .to(['#introAr','#introEn','#skipIntro'],{opacity:0,duration:.3},'+=.5')
+    .add(()=>{d=delta();})
+    .to(markEl,{x:()=>d.x,y:()=>d.y,scale:()=>d.s,duration:.85,ease:'power3.inOut'})
+    .to('#intro',{backgroundColor:'rgba(244,245,243,0)',duration:.5},'-=.45');
+  document.getElementById('skipIntro').addEventListener('click',()=>{tl.kill();finish();});
+  function finish(){
+    gsap.set('#headerMark',{opacity:1});
+    gsap.to('#intro',{opacity:0,duration:.2,onComplete(){document.getElementById('intro').remove();}});
+    document.body.style.overflow='';
+    startScroll();
+  }
+}
+</script>
+</body>
+</html>

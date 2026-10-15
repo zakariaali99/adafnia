@@ -1,0 +1,2 @@
+{% load site_tags %}
+{% if settings.about_ar or settings.about_en %}<section class="wrap prose" style="padding-block:30px"><h2>{% if is_ar %}نبذة عن المصنع{% else %}About the factory{% endif %}</h2><p>{% translated settings 'about' lang %}</p></section>{% endif %}

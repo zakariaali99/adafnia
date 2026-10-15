@@ -1,0 +1,13 @@
+<figure class="project-map">
+  <div class="map-heading"><span>{% if is_ar %}حضورنا في ليبيا{% else %}OUR FOOTPRINT IN LIBYA{% endif %}</span><i class="ph ph-map-pin" aria-hidden="true"></i></div>
+  <svg viewBox="0 0 550 530" role="img" aria-labelledby="libya-map-title" class="libya-map">
+    <title id="libya-map-title">{% if is_ar %}المصنع في مصراتة، ومشاريع موثقة في طرابلس وصبراتة{% else %}Factory in Misurata, with documented projects in Tripoli and Sabratha{% endif %}</title>
+    <!-- Natural Earth 110m geographic outline, projected from the existing Remal reference. -->
+    <polygon class="libya-outline" points="197.2,385.2 175.7,397.7 158.7,379.0 110.9,364.4 97.6,343.0 73.6,327.4 59.4,333.5 48.8,314.4 47.6,299.8 29.7,275.3 41.8,261.1 39.1,239.6 43.0,220.9 40.6,205.6 46.1,177.8 44.5,162.1 34.5,131.9 49.4,124.0 52.1,109.8 48.8,95.5 69.7,82.6 78.8,71.7 93.6,61.8 95.4,35.6 130.9,47.5 143.6,44.5 169.0,50.3 209.3,65.2 223.3,95.5 250.5,102.3 293.3,116.6 325.7,133.2 340.2,124.4 354.8,108.7 347.8,82.9 357.2,66.2 379.0,50.3 399.9,45.8 441.1,52.6 451.4,67.9 462.6,67.9 472.3,73.7 502.3,77.8 509.6,89.0 498.6,105.3 503.5,120.0 495.6,141.0 504.7,168.2 504.7,414.4 504.7,482.4 469.9,482.4 469.6,496.7 348.7,431.4 227.8,366.5"></polygon>
+    <text class="map-country" x="288" y="285" text-anchor="middle">{% if is_ar %}ليبيا{% else %}LIBYA{% endif %}</text>
+    <g class="map-marker" data-city="Sabratha"><circle class="map-halo" cx="125.7" cy="47.5" r="12"></circle><circle class="map-pin" cx="125.7" cy="47.5" r="4"></circle><path class="map-leader" d="M125.7 47.5 L104 72 L60 72"></path><text x="65" y="100" text-anchor="middle">{% if is_ar %}صبراتة{% else %}Sabratha{% endif %}</text></g>
+    <g class="map-marker" data-city="Tripoli"><circle class="map-halo" cx="146.9" cy="44.1" r="12"></circle><circle class="map-pin" cx="146.9" cy="44.1" r="4"></circle><path class="map-leader" d="M146.9 44.1 L163 32 L205 32"></path><text x="199" y="21" text-anchor="middle">{% if is_ar %}طرابلس{% else %}Tripoli{% endif %}</text></g>
+    <g class="map-marker map-factory" data-city="Misurata"><circle class="map-halo" cx="204.5" cy="61.5" r="16"></circle><circle class="map-pin" cx="204.5" cy="61.5" r="5"></circle><path class="map-leader" d="M204.5 61.5 L236 90 L278 90"></path><text x="280" y="117" text-anchor="middle">{% if is_ar %}مصراتة{% else %}Misurata{% endif %}</text></g>
+  </svg>
+  <figcaption><h3>{% if is_ar %}من مصراتة، نصل.{% else %}From Misurata, we connect.{% endif %}</h3><p>{% if is_ar %}مصنعنا في مصراتة، ومن مشاريعنا مرافق في طرابلس وصبراتة.{% else %}Our factory in Misurata, with projects including facilities in Tripoli and Sabratha.{% endif %}</p></figcaption>
+</figure>

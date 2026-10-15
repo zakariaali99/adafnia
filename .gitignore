@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+.venv/
+LOCAL_ACCESS.md
+.DS_Store
+
+# client originals duplicated in reference/
+inputs/

@@ -1,0 +1,20 @@
+{% load static %}<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>إدارة الدافنية</title>
+  <link rel="icon" href="{% static 'img/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard-shell.css' %}">
+</head>
+<body>
+  <header>
+    <a class="dashboard-brand" href="/dashboard/"><img src="{% static 'img/logo.png' %}" alt="" width="48" height="48"><span><b>الدافنية</b><small>إدارة الموقع والمحتوى</small></span></a>
+    <a class="view-site" href="/ar/" target="_blank" rel="noopener">عرض الموقع ↗</a>
+    {% if user.is_authenticated %}<form action="/dashboard/logout/" method="post">{% csrf_token %}<span class="editor-name">{{ user.get_full_name|default:user.username }}</span><button>تسجيل الخروج</button></form>{% endif %}
+  </header>
+  <div class="layout">
+    {% if sections %}<nav aria-label="إدارة المحتوى"><p class="nav-heading">مساحة العمل</p><a href="/dashboard/" {% if request.path == '/dashboard/' %}aria-current="page"{% endif %}>نظرة عامة</a>{% for key,label in sections %}<a href="/dashboard/{{ key }}/" {% if section == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}<p class="nav-footer">ADAFNIA<br>المحتوى بالعربية والإنجليزية</p></nav>{% endif %}
+    <main>{% for message in messages %}<p role="status" class="notice">{{ message }}</p>{% endfor %}{% block content %}{% endblock %}</main>
+  </div>
+</body></html>
