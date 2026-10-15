@@ -1,0 +1,9 @@
+{% if page_obj.has_other_pages %}
+<nav class="pager" aria-label="{{ t.pages }}">
+  {% if page_obj.has_previous %}<a class="chip" href="?{% if q %}q={{ q|urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">{{ t.prev }}</a>{% endif %}
+  {% for n in page_obj.paginator.page_range %}
+    <a class="chip {% if n == page_obj.number %}on{% endif %}" href="?{% if q %}q={{ q|urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category|urlencode }}&{% endif %}page={{ n }}" {% if n == page_obj.number %}aria-current="page"{% endif %}>{{ n }}</a>
+  {% endfor %}
+  {% if page_obj.has_next %}<a class="chip" href="?{% if q %}q={{ q|urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">{{ t.next }}</a>{% endif %}
+</nav>
+{% endif %}

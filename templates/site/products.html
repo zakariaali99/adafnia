@@ -1,1 +1,45 @@
-{% extends 'site/base.html' %}{% load static site_tags %}{% block content %}<section class="page-heading wrap"><p class="eyebrow">{% if is_ar %}كتالوج الدافنية{% else %}THE ADAFNIA CATALOGUE{% endif %}</p><h1>{% if is_ar %}صُنعت لتصل.<br><span>وصُممت لتدوم.</span>{% else %}Made to connect.<br><span>Designed to endure.</span>{% endif %}</h1><p>{% if is_ar %}تعرّف على عائلات المنتجات، واطّلع على المواصفات المتاحة لكل مشروع.{% else %}Explore our product families and find the available specifications for your project.{% endif %}</p></section><section class="wrap section" style="padding-top:0"><form class="filters" method="get"><div class="field"><label for="q">{% if is_ar %}ابحث عن منتج{% else %}Search products{% endif %}</label><input id="q" name="q" value="{{ q }}" placeholder="{% if is_ar %}اسم المنتج أو الاستخدام{% else %}Product or application{% endif %}"></div><div class="field"><label for="category">{% if is_ar %}عائلة المنتج{% else %}Product family{% endif %}</label><select id="category" name="category"><option value="">{% if is_ar %}جميع العائلات{% else %}All families{% endif %}</option>{% for category in categories %}<option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:'s' %}selected{% endif %}>{% translated category 'title' lang %}</option>{% endfor %}</select></div><button class="button" type="submit">{% if is_ar %}بحث{% else %}Search{% endif %}<span>↗</span></button>{% if q or selected_category %}<a class="inline-link" href="{{ prefix }}/products/">{% if is_ar %}مسح الفلاتر{% else %}Clear filters{% endif %}</a>{% endif %}</form><div class="catalog-grid">{% for product in products %}<a class="product-feature" href="{{ prefix }}/products/{{ product.pk }}/"><div class="product-photo">{% if product.image %}<img src="{{ product.image.url }}" alt="{% translated product 'title' lang %}" loading="lazy">{% else %}<img src="{% static 'img/pipes.webp' %}" alt="" loading="lazy">{% endif %}<span class="round-arrow" aria-hidden="true">↗</span></div><div class="product-caption"><span class="technical">{{ product.material }}</span><h2 style="font-size:27px">{% translated product 'title' lang %}</h2><p>{% translated product 'description' lang %}</p></div></a>{% empty %}<div class="empty-state"><h2>{% if is_ar %}لا توجد نتائج مطابقة{% else %}No matching products{% endif %}</h2><p>{% if is_ar %}جرّب اسماً آخر أو اعرض جميع المنتجات.{% else %}Try another search or browse all products.{% endif %}</p><a class="inline-link section-link" href="{{ prefix }}/products/">{% if is_ar %}جميع المنتجات{% else %}All products{% endif %}</a></div>{% endfor %}</div>{% include 'site/pagination.html' %}</section>{% endblock %}
+{% extends 'site/base.html' %}
+{% load site_tags %}
+{% block title %}{{ t.our_products }}{% endblock %}
+{% block description %}{{ t.products_page_text }}{% endblock %}
+{% block content %}
+{% include 'site/parts/page_hero.html' with title=t.our_products lead=t.products_page_text image='img/pipes.webp' %}
+<section>
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="chips" role="list">
+        <a class="chip {% if not selected_category %}on{% endif %}" href="{{ prefix }}/products/" role="listitem">{{ t.all_families }}</a>
+        {% for category in categories %}
+          <a class="chip {% if selected_category == category.pk|stringformat:'s' or selected_category == category.slug %}on{% endif %}" href="?category={{ category.pk }}" role="listitem">{% translated category 'title' lang %}</a>
+        {% endfor %}
+      </div>
+      <form class="search" method="get" role="search">
+        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+        <input type="search" name="q" value="{{ q }}" placeholder="{{ t.search_placeholder }}" aria-label="{{ t.search_placeholder }}">
+        <button class="btn" type="submit">{{ t.search }}</button>
+      </form>
+    </div>
+    {% if products %}
+      <div class="grid-3">
+        {% for product in products %}{% include 'site/parts/product_card.html' %}{% endfor %}
+      </div>
+      {% include 'site/parts/pagination.html' %}
+    {% else %}
+      <div class="empty">{% include 'site/parts/icon.html' with name='drop' %}<p>{{ t.no_products }}</p><p style="margin-top:var(--s2)"><a class="btn soft" href="{{ prefix }}/products/">{{ t.all_products }}</a></p></div>
+    {% endif %}
+  </div>
+</section>
+{% if settings.profile or resources %}
+<section class="tint">
+  <div class="wrap">
+    <div class="card cta rv" style="flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3)">
+      <div><h3>{{ t.catalogue_title }}</h3><p>{{ t.catalogue_text }}</p></div>
+      <a class="btn light" style="margin-top:0" href="{% if settings.profile %}{{ settings.profile.url }}{% else %}{{ resources.0.file.url }}{% endif %}" download>{{ t.download_catalogue }}</a>
+    </div>
+  </div>
+</section>
+{% include 'site/parts/contact_band.html' %}
+{% else %}
+{% include 'site/parts/contact_band.html' with wave_from='#FFFFFF' %}
+{% endif %}
+{% endblock %}

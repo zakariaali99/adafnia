@@ -1,0 +1,10 @@
+{% load site_tags %}
+<a class="card rv product-feature" href="{{ prefix }}/products/{{ product.pk }}/">
+  <div class="card-ph">{% if product.image %}<img src="{{ product.image.url }}" alt="{% translated product 'title' lang %}" loading="lazy">{% endif %}</div>
+  <div class="card-body">
+    {% if product.material %}<span class="pill">{{ product.material }}</span>{% endif %}
+    <h3>{% translated product 'title' lang %}</h3>
+    <p>{% translated product 'description' lang %}</p>
+    <span class="btn soft">{{ t.details }}</span>
+  </div>
+</a>

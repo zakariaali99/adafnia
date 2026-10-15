@@ -1,2 +1,0 @@
-{% load site_tags %}
-{% if settings.profile %}<article class="document-row"><div><span class="technical">PDF</span><h2 style="font-size:27px">{% if is_ar %}أحدث ملف تعريفي{% else %}Latest company profile{% endif %}</h2></div><a class="button button-secondary" href="{{ settings.profile.url }}" target="_blank" rel="noopener">{% if is_ar %}عرض وتحميل{% else %}View & download{% endif %}<span>↗</span></a></article>{% endif %}

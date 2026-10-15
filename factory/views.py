@@ -1,4 +1,5 @@
 import hashlib
+import re
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 from django.conf import settings
@@ -9,9 +10,14 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone, translation
 from django.core.paginator import Paginator
-from .models import Product, ProductVariant, NewsArticle, Project, Certificate, Resource, SubmissionThrottle
+from .models import Product, ProductVariant, NewsArticle, Project, Certificate, Resource, SubmissionThrottle, SiteSettings
 from .forms import EnquiryForm
 from .identifiers import parse_id, id_or_slug
+from .strings import STRINGS
+
+
+def _str(value):
+    return None if value is None else str(value)
 
 def public_data():
     return {'products': Product.objects.filter(is_published=True).select_related('category').prefetch_related(Prefetch('variants', queryset=ProductVariant.objects.filter(approved=True))),
@@ -82,6 +88,13 @@ def localized_page(request, lang, page='home', slug=None):
             data['variants'] = obj.variants.filter(approved=True)
             data['diameters'] = data['variants'].order_by('diameter_mm').values_list('diameter_mm', flat=True).distinct()
             data['pressures'] = data['variants'].exclude(pressure_bar__isnull=True).order_by('pressure_bar').values_list('pressure_bar', flat=True).distinct()
+            data['variants'] = data['variants'].order_by('diameter_mm', 'pressure_bar')
+            data['variant_json'] = [{'id': v.pk, 'product': v.product_id, 'd': str(v.diameter_mm), 'p': _str(v.pressure_bar), 'sdr': _str(v.sdr), 'wall': _str(v.wall_mm), 'weight': _str(v.weight_kg_m)} for v in data['variants']]
+            strings = STRINGS[lang]
+            site = SiteSettings.objects.first() or SiteSettings()
+            data['picker_labels'] = {'mm': strings['unit_mm'], 'bar': strings['unit_bar'], 'kgm': strings['unit_kgm'], 'waMsg': strings['wa_quote_msg'], 'sep': '، ' if lang == 'ar' else ', ',
+                                     'product': (obj.title_en or obj.title_ar) if lang == 'en' else obj.title_ar,
+                                     'wa': re.sub(r'\D', '', site.whatsapp or site.phone or ''), 'contact': f'/{lang}/contact/'}
     if page == 'products':
         query = request.GET.get('q', '').strip()[:150]
         if query:

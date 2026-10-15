@@ -1,1 +1,32 @@
-{% extends 'site/base.html' %}{% load site_tags static %}{% block content %}<section class="page-heading wrap"><p class="eyebrow">{% if is_ar %}مشاريعنا{% else %}OUR PROJECTS{% endif %}</p><h1>{% if is_ar %}جزء من البناء.<br><span>وجزء من الحياة.</span>{% else %}Part of the build.<br><span>Part of everyday life.</span>{% endif %}</h1><p>{% if is_ar %}مشاريع وردت في الملف التعريفي للمصنع، من الزراعة إلى المرافق العامة.{% else %}Projects documented in our company profile, from agriculture to public facilities.{% endif %}</p></section><section class="section wrap" style="padding-top:0"><div class="project-grid">{% for project in projects %}<article class="project-card">{% if project.image %}<img src="{{ project.image.url }}" alt="{% translated project 'title' lang %}" loading="lazy">{% endif %}<div class="project-meta"><span>{% translated project 'location' lang %}</span>{% if project.year %}<span>{{ project.year }}</span>{% endif %}</div><h2 style="font-size:29px">{% translated project 'title' lang %}</h2><p>{% translated project 'description' lang %}</p><a class="inline-link" href="{{ prefix }}/projects/{{ project.pk }}/">{% if is_ar %}عن المشروع{% else %}View project{% endif %}<span>↗</span></a></article>{% empty %}<div class="empty-state"><h2>{% if is_ar %}معرض المشاريع قيد الإعداد{% else %}Our project portfolio is being prepared{% endif %}</h2><p>{% if is_ar %}تواصل معنا للمزيد من المعلومات عن خبرة المصنع.{% else %}Contact us to learn more about the factory's experience.{% endif %}</p></div>{% endfor %}</div>{% include 'site/pagination.html' %}</section>{% endblock %}
+{% extends 'site/base.html' %}
+{% load site_tags %}
+{% block title %}{{ t.nav_projects }}{% endblock %}
+{% block description %}{{ t.projects_page_text }}{% endblock %}
+{% block content %}
+{% include 'site/parts/page_hero.html' with title=t.nav_projects lead=t.projects_page_text image='img/factory.webp' %}
+<section>
+  <div class="wrap">
+    {% if projects %}
+      <div class="grid-3">
+        {% for project in projects %}
+          <a class="card rv" href="{{ prefix }}/projects/{{ project.pk }}/">
+            {% if project.image %}<div class="card-ph wide"><img src="{{ project.image.url }}" alt="" loading="lazy"></div>
+            {% else %}<div class="card-ph wide empty">{% include 'site/parts/icon.html' with name='pin' %}</div>{% endif %}
+            <div class="card-body">
+              {% translated project 'location' lang as loc %}
+              {% if loc or project.year %}<span class="pill">{{ loc }}{% if loc and project.year %} · {% endif %}{{ project.year|default:'' }}</span>{% endif %}
+              <h3>{% translated project 'title' lang %}</h3>
+              {% translated project 'description' lang as pdesc %}{% if pdesc %}<p>{{ pdesc }}</p>{% endif %}
+              <span class="more">{{ t.details }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+      {% include 'site/parts/pagination.html' %}
+    {% else %}
+      <div class="empty">{% include 'site/parts/icon.html' with name='pin' %}<p>{{ t.no_projects }}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% include 'site/parts/contact_band.html' with wave_from='#FFFFFF' %}
+{% endblock %}

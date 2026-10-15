@@ -1,0 +1,8 @@
+{% load site_tags %}
+<div class="branch rv">
+  {% translated branch 'address' lang as baddr %}{% translated branch 'description' lang as bdesc %}
+  <h3>{% translated branch 'title' lang %}</h3>
+  {% if baddr %}<p>{{ baddr }}</p>{% endif %}
+  {% if bdesc|has_words %}<p>{{ bdesc }}</p>{% endif %}
+  {% for phone in branch|phones %}<a href="tel:{{ phone|tel }}">{{ phone }}</a>{% endfor %}
+</div>

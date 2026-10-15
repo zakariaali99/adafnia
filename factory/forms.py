@@ -10,6 +10,7 @@ class EnquiryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.lang = kwargs.pop('lang', 'ar')
         super().__init__(*args, **kwargs)
+        self.label_suffix = ''
         self.fields['product'].queryset = Product.objects.filter(is_published=True)
         labels = {'name': ('الاسم', 'Name'), 'phone': ('الهاتف', 'Phone'), 'email': ('البريد الإلكتروني', 'Email'), 'subject': ('الموضوع', 'Subject'), 'message': ('الرسالة', 'Message'), 'product': ('المنتج', 'Product')}
         for name, pair in labels.items():

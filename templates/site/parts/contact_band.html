@@ -1,0 +1,18 @@
+{% load site_tags %}
+<section class="contact-band" id="contact">
+  <svg class="wave-top" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 90 C 260 140 520 30 760 70 C 1000 110 1220 120 1440 70 L1440 120 L0 120Z" fill="{{ wave_from|default:'#F1F5F9' }}"/></svg>
+  <div class="wrap">
+    <div class="contact-head">
+      <div><h2 class="rv">{{ t.contact_title }}</h2><p class="rv">{{ t.contact_text }}</p></div>
+      <div class="actions rv">
+        {% if wa_number %}<a class="btn wa" href="https://wa.me/{{ wa_number }}" target="_blank" rel="noopener">{% include 'site/parts/icon.html' with name='wa' %}{{ t.whatsapp_us }}</a>{% endif %}
+        <a class="btn light" href="{{ prefix }}/contact/">{{ t.request_quote }}</a>
+      </div>
+    </div>
+    <div class="branches">
+      {% for branch in branches %}{% include 'site/parts/branch.html' %}{% endfor %}
+    </div>
+    {% translated settings 'address' lang as address %}
+    {% if address %}<p class="factory-line"><b>{{ t.factory_label }}:</b> {{ address }}</p>{% endif %}
+  </div>
+</section>

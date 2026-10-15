@@ -1,2 +1,0 @@
-{% load site_tags %}
-{% if settings.address_ar or settings.address_en %}<article class="branch"><h3>{% if is_ar %}عنوان المصنع{% else %}Factory address{% endif %}</h3><p>{% translated settings 'address' lang %}</p></article>{% endif %}

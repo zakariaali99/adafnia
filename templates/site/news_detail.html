@@ -1,1 +1,22 @@
-{% extends 'site/base.html' %}{% load site_tags %}{% block title %}{% translated article 'title' lang %} | ADAFNIA{% endblock %}{% block content %}<header class="page-heading wrap article-header"><a class="inline-link" href="{{ prefix }}/news/">{% if is_ar %}جميع الأخبار{% else %}All news{% endif %}</a><p><time datetime="{{ article.published_at|date:'Y-m-d' }}">{{ article.published_at|date:'d.m.Y' }}</time></p><h1>{% translated article 'title' lang %}</h1><p>{% translated article 'description' lang %}</p></header>{% if article.image %}<figure class="wide-photo wrap"><img src="{{ article.image.url }}" alt="{% translated article 'title' lang %}"></figure>{% endif %}<article class="article-body wrap">{% translated article 'body' lang %}<div class="article-share"><span>{% if is_ar %}شارك الخبر{% else %}Share article{% endif %}</span><a class="inline-link" rel="noopener noreferrer" target="_blank" href="https://wa.me/?text={{ request.build_absolute_uri|urlencode }}">WhatsApp ↗</a></div></article>{% endblock %}
+{% extends 'site/base.html' %}
+{% load site_tags %}
+{% block title %}{% translated article 'title' lang %}{% endblock %}
+{% block description %}{% translated article 'description' lang %}{% endblock %}
+{% block content %}
+{% translated article 'title' lang as atitle %}
+{% include 'site/parts/page_hero.html' with title=atitle image='img/production.webp' parent_url=prefix|add:'/news/' parent_title=t.nav_news %}
+<section>
+  <article class="wrap article">
+    <time class="rv" datetime="{{ article.published_at|date:'Y-m-d' }}">{{ article.published_at|date:'j F Y' }}</time>
+    {% if article.image %}<div class="article-ph rv" style="margin-top:var(--s2)"><img src="{{ article.image.url }}" alt="{{ atitle }}"></div>{% endif %}
+    {% translated article 'description' lang as adesc %}{% if adesc %}<p class="lead rv" style="margin-bottom:var(--s3)">{{ adesc }}</p>{% endif %}
+    {% translated article 'body' lang as body %}
+    <div class="article-body rv">{{ body|linebreaks }}</div>
+    <div class="article-foot">
+      <a class="btn soft" href="{{ prefix }}/news/">{{ t.all_news }}</a>
+      <a class="btn wa" href="https://wa.me/?text={{ atitle|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener">{% include 'site/parts/icon.html' with name='wa' %}{{ t.share_whatsapp }}</a>
+    </div>
+  </article>
+</section>
+{% include 'site/parts/contact_band.html' with wave_from='#FFFFFF' %}
+{% endblock %}

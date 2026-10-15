@@ -1,1 +1,55 @@
-{% extends 'site/base.html' %}{% load site_tags %}{% block content %}<section class="page-heading wrap"><p class="eyebrow">{% if is_ar %}لنبنِ الاتصال{% else %}LET'S CONNECT{% endif %}</p><h1>{% if is_ar %}من احتياجك.<br><span>إلى الحل المناسب.</span>{% else %}From your requirements.<br><span>To the right solution.</span>{% endif %}</h1><p>{% if is_ar %}أخبرنا عن مشروعك، أو اطلب عرض سعر، أو تواصل مباشرة مع أقرب مركز مبيعات.{% else %}Tell us about your project, request a quote or contact your nearest sales centre.{% endif %}</p></section><section class="contact-layout wrap"><form method="post" class="contact-form" data-submit novalidate>{% csrf_token %}<h2>{% if is_ar %}أرسل طلبك{% else %}Send an enquiry{% endif %}</h2>{% if form.non_field_errors %}<div role="alert">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}<div class="form-field">{% if not field.is_hidden %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{% endif %}{{ field }}{% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}{% if field.errors %}<div role="alert">{{ field.errors }}</div>{% endif %}</div>{% endfor %}<button class="button" type="submit">{% if is_ar %}إرسال الطلب{% else %}Send enquiry{% endif %}<span aria-hidden="true">↗</span></button><p class="note">{% if is_ar %}تُستخدم بياناتك للرد على هذا الطلب فقط.{% else %}Your details are used only to respond to this enquiry.{% endif %}</p></form><div><h2 style="font-size:30px">{% if is_ar %}المصنع ومراكز المبيعات{% else %}Factory & sales centres{% endif %}</h2>{% include 'site/contact_address.html' %}{% for branch in branches %}<article class="branch"><h3>{% translated branch 'title' lang %}</h3><p>{% translated branch 'address' lang %}</p>{% if branch.description_ar or branch.description_en %}<p dir="ltr">{% translated branch 'description' lang %}</p>{% endif %}{% if branch.phone %}<a dir="ltr" href="tel:{{ branch.phone }}">{{ branch.phone }}</a>{% endif %}</article>{% endfor %}{% if settings.whatsapp %}<a class="button button-secondary section-link" href="https://wa.me/{{ settings.whatsapp|cut:' '|cut:'+' }}" target="_blank" rel="noopener">WhatsApp<span>↗</span></a>{% endif %}</div></section>{% endblock %}
+{% extends 'site/base.html' %}
+{% load site_tags %}
+{% block title %}{{ t.nav_contact }}{% endblock %}
+{% block description %}{{ t.contact_page_text }}{% endblock %}
+{% block content %}
+{% include 'site/parts/page_hero.html' with title=t.nav_contact lead=t.contact_page_text image='img/factory.webp' wave_fill='#F1F5F9' %}
+<section class="tint">
+  <div class="wrap contact-grid">
+    <div class="form-card rv" id="form">
+      <h2>{{ t.form_title }}</h2>
+      <p>{{ t.form_text }}</p>
+      {% if request.GET.success %}<p class="form-success" role="status">{{ t.sent }}</p>{% endif %}
+      {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+      <form method="post" action="{{ prefix }}/contact/#form" novalidate>
+        {% csrf_token %}
+        {{ form.website }}
+        <div class="field-row">
+          <div class="field">{{ form.name.label_tag }}{{ form.name }}{{ form.name.errors }}</div>
+          <div class="field">{{ form.phone.label_tag }}{{ form.phone }}{{ form.phone.errors }}</div>
+        </div>
+        <div class="field-row">
+          <div class="field">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
+          <div class="field">{{ form.product.label_tag }}{{ form.product }}{{ form.product.errors }}</div>
+        </div>
+        <div class="field">{{ form.subject.label_tag }}{{ form.subject }}{{ form.subject.errors }}</div>
+        <div class="field">{{ form.message.label_tag }}{{ form.message }}{{ form.message.errors }}</div>
+        <button class="btn" type="submit">{{ t.send }}</button>
+      </form>
+    </div>
+    <div class="side-stack">
+      {% if wa_number %}
+      <div class="side-card blue rv">
+        <h3>{{ t.quick_title }}</h3>
+        <p>{{ t.quick_text }}</p>
+        <a class="btn wa" href="https://wa.me/{{ wa_number }}" target="_blank" rel="noopener">{% include 'site/parts/icon.html' with name='wa' %}{{ t.whatsapp_us }}</a>
+      </div>
+      {% endif %}
+      {% translated settings 'address' lang as address %}
+      {% if address %}
+      <div class="side-card rv">
+        <h3>{{ t.factory_address }}</h3>
+        <p>{{ address }}</p>
+        {% if settings.phone %}<p class="ltr" style="text-align:start"><a href="tel:{{ settings.phone|cut:' ' }}">{{ settings.phone }}</a></p>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="sec-title"><div><h2 class="rv">{{ t.sales_centres }}</h2></div></div>
+    <div class="branches light">{% for branch in branches %}{% include 'site/parts/branch.html' %}{% endfor %}</div>
+  </div>
+</section>
+{% endblock %}

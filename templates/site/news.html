@@ -1,1 +1,17 @@
-{% extends 'site/base.html' %}{% block content %}<section class="page-heading wrap"><p class="eyebrow">ADAFNIA NEWSROOM</p><h1>{% if is_ar %}أخبارنا.<br><span>وما هو قادم.</span>{% else %}Our news.<br><span>And what's next.</span>{% endif %}</h1><p>{% if is_ar %}مستجدات الإنتاج، مشاركات المصنع، وآخر الأخبار.{% else %}Production updates, factory events and our latest news.{% endif %}</p></section><section class="section wrap" style="padding-top:0"><div class="news-grid">{% for article in news %}{% include 'site/news_card.html' %}{% empty %}<div class="empty-state"><h2>{% if is_ar %}قريباً، من قلب المصنع.{% else %}Coming soon, from the factory.{% endif %}</h2><p>{% if is_ar %}تظهر الأخبار هنا فور نشرها. يمكنك التعرف على منتجاتنا وقصة الدافنية الآن.{% else %}Updates appear here as they are published. In the meantime, explore our products and story.{% endif %}</p><a class="inline-link section-link" href="{{ prefix }}/products/">{% if is_ar %}اكتشف المنتجات{% else %}Explore products{% endif %}<span>↗</span></a></div>{% endfor %}</div>{% include 'site/pagination.html' %}</section>{% endblock %}
+{% extends 'site/base.html' %}
+{% block title %}{{ t.nav_news }}{% endblock %}
+{% block description %}{{ t.news_page_text }}{% endblock %}
+{% block content %}
+{% include 'site/parts/page_hero.html' with title=t.nav_news lead=t.news_page_text image='img/production.webp' %}
+<section>
+  <div class="wrap">
+    {% if news %}
+      <div class="grid-3">{% for article in news %}{% include 'site/parts/news_card.html' %}{% endfor %}</div>
+      {% include 'site/parts/pagination.html' %}
+    {% else %}
+      <div class="empty">{% include 'site/parts/icon.html' with name='news' %}<p>{{ t.no_news }}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% include 'site/parts/contact_band.html' with wave_from='#FFFFFF' %}
+{% endblock %}

@@ -1,24 +1,89 @@
 {% load static site_tags %}<!doctype html>
 <html lang="{{ lang }}" dir="{% if is_ar %}rtl{% else %}ltr{% endif %}">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% translated settings 'title' lang %} | ADAFNIA{% endblock %}</title>
-  <meta name="description" content="{% block description %}{% if is_ar %}مصنع الدافنية للأنابيب البلاستيكية. حلول البولي إيثيلين للري والمياه والبنية التحتية، من مصراتة منذ 2006.{% else %}Adafnia plastic pipes factory. Polyethylene solutions for irrigation, water and infrastructure. Manufacturing in Misurata since 2006.{% endif %}{% endblock %}">
-  <meta name="theme-color" content="#124b78"><link rel="icon" href="{% static 'img/logo.png' %}">
-  <meta property="og:type" content="website"><meta property="og:site_name" content="ADAFNIA"><meta property="og:title" content="{% if is_ar %}الدافنية | هندسة تدوم{% else %}ADAFNIA | Engineered to endure{% endif %}"><meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/factory.webp' %}">
-  <link rel="stylesheet" href="{% static 'site.css' %}"><link rel="stylesheet" href="{% static 'details.css' %}"><link rel="stylesheet" href="{% static 'icons/style.css' %}"><link rel="stylesheet" href="{% static 'presentation.css' %}?v=20261015c"><link rel="stylesheet" href="{% static 'print.css' %}" media="print"><script src="{% static 'site.js' %}?v=20261015c" defer></script><script src="{% static 'presentation.js' %}?v=20261015c" defer></script>
-  <link rel="alternate" hreflang="ar" href="/ar/{{ current_path|default:'' }}"><link rel="alternate" hreflang="en" href="/en/{{ current_path|default:'' }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% translated settings 'title' lang %}{% endblock %} | ADAFNIA</title>
+  <meta name="description" content="{% block description %}{{ t.hero_lead }}{% endblock %}">
+  <meta name="theme-color" content="#2860B0">
+  <link rel="icon" href="{% static 'img/mark.png' %}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ADAFNIA">
+  <meta property="og:title" content="{% block og_title %}{% translated settings 'title' lang %}{% endblock %}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/factory.webp' %}">
+  <link rel="alternate" hreflang="{% if is_ar %}en{% else %}ar{% endif %}" href="{{ other_lang_url }}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script>document.documentElement.classList.add('js');</script>
 </head>
-<body data-lang="{{ lang }}" class="{% block body_class %}{% endblock %}">
-<a href="#main" class="skip-link">{% if is_ar %}انتقل للمحتوى{% else %}Skip to content{% endif %}</a>
-<header class="header">
-  <a class="brand" href="{{ prefix }}/" aria-label="{% if is_ar %}الدافنية، الرئيسية{% else %}Adafnia home{% endif %}"><img src="{% static 'img/logo.png' %}" alt="" width="68" height="62"><span><b>{% if is_ar %}الدافنية{% else %}ADAFNIA{% endif %}</b><small>{% if is_ar %}للصناعات البلاستيكية{% else %}PLASTIC PIPE INDUSTRIES{% endif %}</small></span></a>
-  <nav id="navigation" class="navigation" aria-label="{% if is_ar %}القائمة الرئيسية{% else %}Main navigation{% endif %}">
-    <a href="{{ prefix }}/about/">{% if is_ar %}عن الدافنية{% else %}Our story{% endif %}</a><a href="{{ prefix }}/products/">{% if is_ar %}المنتجات{% else %}Products{% endif %}</a><a href="{{ prefix }}/quality/">{% if is_ar %}الجودة{% else %}Quality{% endif %}</a><a href="{{ prefix }}/projects/">{% if is_ar %}المشاريع{% else %}Projects{% endif %}</a><a href="{{ prefix }}/news/">{% if is_ar %}الأخبار{% else %}News{% endif %}</a><a href="{{ prefix }}/resources/">{% if is_ar %}المكتبة الفنية{% else %}Resources{% endif %}</a>
-  </nav>
-  <div class="header-actions"><a class="language" href="/{% if is_ar %}en{% else %}ar{% endif %}/{{ current_path|default:'' }}" lang="{% if is_ar %}en{% else %}ar{% endif %}">{% if is_ar %}EN{% else %}عربي{% endif %}</a><a class="button button-small" href="{{ prefix }}/contact/">{% if is_ar %}تواصل معنا{% else %}Contact us{% endif %}<span aria-hidden="true">↗</span></a><button class="menu-toggle" aria-expanded="false" aria-controls="navigation" aria-label="{% if is_ar %}فتح القائمة{% else %}Open menu{% endif %}"><span></span><span></span></button></div>
-</header>
-<main id="main">{% if messages %}<div class="messages wrap" role="status">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}{% block content %}{% endblock %}</main>
-<footer class="footer wrap"><div class="footer-top"><a class="footer-wordmark" href="{{ prefix }}/">ADAFNIA<span>®</span></a><p>{% if is_ar %}من مصراتة، نصنع ما يصل الحياة.{% else %}From Misurata. Connecting what matters.{% endif %}</p></div><div class="footer-grid"><div><h3>{% if is_ar %}مصنع الدافنية{% else %}Adafnia factory{% endif %}</h3><p>{% if is_ar %}شركة الشوفان للصناعات البلاستيكية<br>إحدى شركات مجموعة المجري القابضة{% else %}Al-Shofan Plastic Industries<br>A member of Almejarri Holding Group{% endif %}</p></div><div><h3>{% if is_ar %}استكشف{% else %}Explore{% endif %}</h3><a href="{{ prefix }}/products/">{% if is_ar %}المنتجات{% else %}Products{% endif %}</a><a href="{{ prefix }}/resources/">{% if is_ar %}المكتبة الفنية{% else %}Technical library{% endif %}</a><a href="{{ prefix }}/quality/">{% if is_ar %}الجودة والشهادات{% else %}Quality & certificates{% endif %}</a></div><div><h3>{% if is_ar %}تواصل معنا{% else %}Contact us{% endif %}</h3>{% if settings.phone %}<a dir="ltr" href="tel:{{ settings.phone }}">{{ settings.phone }}</a>{% endif %}{% if settings.email %}<a href="mailto:{{ settings.email }}">{{ settings.email }}</a>{% endif %}<a href="{{ prefix }}/contact/">{% if is_ar %}المصنع ومراكز المبيعات{% else %}Factory & sales centres{% endif %}</a></div></div><div class="footer-bottom"><span>© {% now 'Y' %} ADAFNIA. {% if is_ar %}جميع الحقوق محفوظة.{% else %}All rights reserved.{% endif %}</span><button class="text-button" data-replay-intro>{% if is_ar %}إعادة الافتتاحية{% else %}Replay introduction{% endif %}<span aria-hidden="true">↺</span></button></div></footer>
-{% block overlay %}{% endblock %}
-</body></html>
+<body>
+  <a class="skip" href="#main">{{ t.skip }}</a>
+
+  {% block intro %}{% endblock %}
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap">
+      <a class="brand" href="{{ prefix }}/" aria-label="{{ t.factory_name }}">
+        <img class="m-white" id="headerMark" src="{% static 'img/mark-white.png' %}" alt="">
+        <img class="m-blue" src="{% static 'img/mark.png' %}" alt="">
+        <b>{{ t.factory_name }}</b>
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="{{ t.menu }}">
+        <ul>
+          <li><a href="{{ prefix }}/products/" {% if nav_path|slice:':10' == '/products/' %}aria-current="page"{% endif %}>{{ t.nav_products }}</a></li>
+          <li><a href="{{ prefix }}/about/" {% if nav_path == '/about/' %}aria-current="page"{% endif %}>{{ t.nav_about }}</a></li>
+          <li><a href="{{ prefix }}/quality/" {% if nav_path == '/quality/' %}aria-current="page"{% endif %}>{{ t.nav_quality }}</a></li>
+          <li><a href="{{ prefix }}/projects/" {% if nav_path|slice:':10' == '/projects/' %}aria-current="page"{% endif %}>{{ t.nav_projects }}</a></li>
+          <li><a href="{{ prefix }}/news/" {% if nav_path|slice:':6' == '/news/' %}aria-current="page"{% endif %}>{{ t.nav_news }}</a></li>
+          <li><a href="{{ prefix }}/resources/" {% if nav_path == '/resources/' %}aria-current="page"{% endif %}>{{ t.nav_resources }}</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <a class="lang" href="{{ other_lang_url }}" lang="{% if is_ar %}en{% else %}ar{% endif %}" title="{{ t.other_lang_name }}">{{ t.other_lang }}</a>
+        <a class="btn" href="{{ prefix }}/contact/">{{ t.nav_contact }}</a>
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="{{ t.menu }}"><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-top">
+        <div>
+          <img src="{% static 'img/lockup-white.png' %}" alt="{{ t.factory_name }}">
+          <p>{{ t.footer_group }}</p>
+        </div>
+        <div>
+          <h4>{{ t.footer_links }}</h4>
+          <ul>
+            <li><a href="{{ prefix }}/products/">{{ t.nav_products }}</a></li>
+            <li><a href="{{ prefix }}/about/">{{ t.nav_about }}</a></li>
+            <li><a href="{{ prefix }}/quality/">{{ t.nav_quality }}</a></li>
+            <li><a href="{{ prefix }}/projects/">{{ t.nav_projects }}</a></li>
+            <li><a href="{{ prefix }}/news/">{{ t.nav_news }}</a></li>
+            <li><a href="{{ prefix }}/resources/">{{ t.nav_resources }}</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>{{ t.footer_contact }}</h4>
+          <ul>
+            {% if settings.phone %}<li><a class="ltr" href="tel:{{ settings.phone|cut:' ' }}">{{ settings.phone }}</a></li>{% endif %}
+            {% if wa_number %}<li><a href="https://wa.me/{{ wa_number }}" target="_blank" rel="noopener">WhatsApp</a></li>{% endif %}
+            {% if settings.email %}<li><a href="mailto:{{ settings.email }}">{{ settings.email }}</a></li>{% endif %}
+            <li><a href="{{ prefix }}/contact/">{{ t.sales_centres }}</a></li>
+            <li>{{ t.location_line }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">© {% now "Y" %} {{ t.factory_name }}. {{ t.rights }}</div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="{% static 'js/site.js' %}"></script>
+</body>
+</html>

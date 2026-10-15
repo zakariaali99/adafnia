@@ -5,7 +5,8 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
-from factory.models import SiteSettings, Category, Product, Certificate, Branch, Project, Resource
+from factory.catalogue import straight_pipe_rows
+from factory.models import SiteSettings, Category, Product, ProductVariant, Certificate, Branch, Project, Resource
 
 class Command(BaseCommand):
     help = 'Seed conservative reference content without replacing editorial changes or inventing measurements.'
@@ -14,8 +15,8 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         SiteSettings.objects.get_or_create(pk=1, defaults={
-            'tagline_ar': 'أنابيب البولي إيثيلين عالي الكثافة',
-            'tagline_en': 'High density polyethylene pipes',
+            'tagline_ar': 'أنابيب تُوصل الماء إلى كل مزرعة وكل بيت',
+            'tagline_en': 'Pipes that bring water to every farm and every home',
             'about_ar': 'مصنع الدافنية للأنابيب في ليبيا، لإنتاج أنابيب البولي إيثيلين عالي الكثافة لمشاريع البنية التحتية والزراعة.',
             'about_en': 'Adafnia Pipe Factory in Libya produces high density polyethylene pipes for infrastructure and agriculture.',
             'phone': '+218 91 324 1428', 'whatsapp': '+218913241428',
@@ -68,12 +69,18 @@ class Command(BaseCommand):
                     product.full_clean()
                     product.save()
         for slug, ar, en, location_ar, location_en in [
-            ('ouagadougou-conference-hall', 'قاعة مؤتمرات واغادوغو', 'Ouagadougou Conference Hall', 'طرابلس', 'Tripoli'),
+            ('ouagadougou-conference-hall', 'قاعة مؤتمرات واغادوغو', 'Ouagadougou Conference Hall', 'سرت', 'Sirte'),
             ('abu-sitta-equestrian-grounds', 'ميدان أبو ستة للفروسية', 'Abu Sitta Equestrian Grounds', 'طرابلس', 'Tripoli'),
             ('al-afiya-agricultural-project', 'مشروع العافية الزراعي', 'Al-Afiya Agricultural Project', '', ''),
             ('talil-tourism-centre', 'مركز تليل السياحي', 'Talil Tourism Centre', 'صبراتة', 'Sabratha'),
         ]:
             Project.objects.get_or_create(slug=slug, defaults={'title_ar': ar, 'title_en': en, 'location_ar': location_ar, 'location_en': location_en, 'is_published': True})
+        # Earlier seeds placed the Ouagadougou hall in Tripoli; it is in Sirte. Fix only that untouched value.
+        Project.objects.filter(slug='ouagadougou-conference-hall', location_en='Tripoli', location_ar='طرابلس').update(location_ar='سرت', location_en='Sirte')
+        # Catalogue sizes go in as drafts (approved=False) for engineer sign-off; never touch existing rows.
+        straight = Product.objects.filter(slug='pe100-straight-pipes').first()
+        if straight and not straight.variants.exists():
+            ProductVariant.objects.bulk_create(ProductVariant(product=straight, approved=False, **row) for row in straight_pipe_rows())
         profile_path = options['reference_dir'] / 'ملف الدافنية A4.pdf'
         if profile_path.is_file():
             resource, _ = Resource.objects.get_or_create(title_ar='الملف التعريفي لمصنع الدافنية', defaults={'title_en': 'Adafnia company profile'})
@@ -83,4 +90,4 @@ class Command(BaseCommand):
                     resource.full_clean()
                     resource.save()
         count = Certificate.objects.filter(expires_on__lt=timezone.localdate(), is_active=True).update(is_active=False)
-        self.stdout.write(self.style.SUCCESS(f'Content seeded. Archived {count} expired certificates. No engineering measurements or unverified certifications added.'))
+        self.stdout.write(self.style.SUCCESS(f'Content seeded. Archived {count} expired certificates. Catalogue sizes are added as unapproved drafts; no unverified certifications added.'))

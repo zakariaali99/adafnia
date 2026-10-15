@@ -1,0 +1,10 @@
+{% load site_tags static %}
+<a class="card rv" href="{{ prefix }}/news/{{ article.pk }}/">
+  <div class="card-ph wide">{% if article.image %}<img src="{{ article.image.url }}" alt="" loading="lazy">{% else %}<img src="{% static 'img/factory.webp' %}" alt="" loading="lazy">{% endif %}</div>
+  <div class="card-body">
+    <time datetime="{{ article.published_at|date:'Y-m-d' }}">{{ article.published_at|date:'j F Y' }}</time>
+    <h3>{% translated article 'title' lang %}</h3>
+    <p>{% translated article 'description' lang %}</p>
+    <span class="more">{{ t.read_more }}</span>
+  </div>
+</a>

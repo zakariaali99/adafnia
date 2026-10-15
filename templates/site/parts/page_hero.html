@@ -1,0 +1,10 @@
+{% load static %}
+<section class="page-hero">
+  <div class="page-hero-bg"><img src="{% static image %}" alt=""></div>
+  <div class="wrap">
+    <p class="crumbs"><a href="{{ prefix }}/">{{ t.home }}</a>{% if parent_url %} / <a href="{{ parent_url }}">{{ parent_title }}</a>{% endif %}</p>
+    <h1>{{ title }}</h1>
+    {% if lead %}<p class="lead">{{ lead }}</p>{% endif %}
+  </div>
+  {% include 'site/parts/wave.html' with fill=wave_fill %}
+</section>

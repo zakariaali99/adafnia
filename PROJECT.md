@@ -34,3 +34,15 @@ Existing ISO PDFs expired on 10 May 2026. They are explicitly archival; upload r
 Includes homepage and animated introduction, story, catalogue and filtering, product specifications/print-to-PDF, projects, news, certificate archive/current documents, technical library, enquiry/quote capture, staff CRUD, image optimization, bilingual content and publication privacy, sitemap/robots, Passenger configuration, and local verification.
 
 The website is running locally. It is not deployed to the customer's domain; no hosting credentials or domain were provided in this conversation.
+
+## Claude redesign (approved direction v2), 15 October 2026
+
+The owner rejected GPT's visual layer and approved homepage mockup v2 (`mockups/home-v2/`, a Rivulis + Wavin mix: warm, photo-led, one brand blue). All public templates were rebuilt on that system. The backend, dashboard and tests were kept.
+
+- Public templates: `templates/site/` + `templates/site/parts/`. Styles: `static/css/site.css` (tokens at the top, formatted). Behaviour: `static/js/site.js`.
+- Interface copy (AR/EN): `factory/strings.py`, available as `{{ t.key }}`. Company content stays in the DB.
+- Product page: size picker plus full table from approved `ProductVariant` rows. WhatsApp and the contact form get the exact size.
+- Catalogue sizes (PE100, 20–225 mm × PN 4–25) are in `factory/catalogue.py`, transcribed from profile pages 7 and 10. `seed_content` adds them **unapproved**. **The local DB has them approved for the preview only. Production must be approved by the factory engineer.**
+- Data fixes: Ouagadougou hall moved to Sirte (was Tripoli). Hero tagline set to the approved headline.
+- Removed: AI-generated hero image, GPT public CSS/JS, Phosphor icon font. The dashboard still uses its own CSS and fonts.
+- GSAP 3.13 and Almarai load from CDNs (cdnjs, Google Fonts). Self-host them before launch if required.

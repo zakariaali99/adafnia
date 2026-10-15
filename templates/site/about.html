@@ -1,1 +1,62 @@
-{% extends 'site/base.html' %}{% load static site_tags %}{% block content %}<section class="page-heading wrap"><p class="eyebrow">{% if is_ar %}عن الدافنية{% else %}OUR STORY{% endif %}</p><h1>{% if is_ar %}نبني خبرتنا.<br><span>لتبني أنت الغد.</span>{% else %}Building our expertise.<br><span>For your tomorrow.</span>{% endif %}</h1><p>{% if is_ar %}مصنع ليبي في مصراتة، يجمع خبرة الصناعة مع احتياجات الري والمياه والبنية التحتية.{% else %}A Libyan factory in Misurata, connecting manufacturing expertise with the needs of irrigation, water and infrastructure.{% endif %}</p></section>{% include 'site/editable_company.html' %}<figure class="wide-photo wrap"><img src="{% static 'img/factory.webp' %}" alt="{% if is_ar %}مصنع الدافنية من الجو{% else %}Adafnia factory aerial view{% endif %}" width="1024" height="575"></figure><section class="section wrap prose"><h2>{% if is_ar %}من مصراتة، منذ 2006.{% else %}From Misurata, since 2006.{% endif %}</h2><p>{% if is_ar %}تأسس مصنع الدافنية لأنابيب الري وملحقاتها سنة 2006، تحت مظلة شركة الشوفان للصناعات البلاستيكية، إحدى شركات مجموعة المجري القابضة التي بدأت رحلتها سنة 1994.{% else %}Adafnia Factory for Irrigation Pipes and Fittings was established in 2006 under Al-Shofan Plastic Industries, a member of Almejarri Holding Group, whose story began in 1994.{% endif %}</p><p>{% if is_ar %}من إنتاج أنابيب البولي إيثيلين إلى خدمة المشروعات الزراعية وشبكات المياه، تطورت خطوط المصنع مع الطلب المحلي. وتعرض الوثائق المرجعية أنابيب PE100 مستقيمة ولفّات، بمقاسات وفئات ضغط متعددة.{% else %}From polyethylene pipe production to serving agriculture and water networks, the factory's lines have evolved with local demand. The company documentation covers straight PE100 pipes and coils across a range of diameters and pressure classes.{% endif %}</p></section><section class="timeline wrap section" aria-label="{% if is_ar %}تاريخ المصنع{% else %}Factory history{% endif %}"><article data-reveal><strong>1994</strong><div><h3>{% if is_ar %}البداية مع مجموعة المجري{% else %}Almejarri Group begins{% endif %}</h3><p>{% if is_ar %}الجذور التي انطلقت منها خبرة المجموعة في التجارة والصناعة.{% else %}The roots of the group's experience in trade and industry.{% endif %}</p></div></article><article data-reveal><strong>2006</strong><div><h3>{% if is_ar %}تأسيس مصنع الدافنية{% else %}Adafnia is established{% endif %}</h3><p>{% if is_ar %}انطلاق التصنيع بطاقة أولية من خمسة إلى ستة أطنان يومياً بحسب الملف التعريفي.{% else %}Manufacturing begins with an initial output of five to six tonnes a day, as documented in the company profile.{% endif %}</p></div></article><article data-reveal><strong>2009</strong><div><h3>{% if is_ar %}توسعة خطوط الإنتاج{% else %}Production expands{% endif %}</h3><p>{% if is_ar %}إضافة ثلاثة خطوط إنتاج لتلبية احتياجات متنامية.{% else %}Three additional production lines to meet growing demand.{% endif %}</p></div></article><article data-reveal><strong>2020</strong><div><h3>{% if is_ar %}مرحلة صناعية جديدة{% else %}A new manufacturing chapter{% endif %}</h3><p>{% if is_ar %}تحديث بخطوط إنتاج ذات تحكم إلكتروني.{% else %}Modernisation with electronically controlled production lines.{% endif %}</p></div></article></section><section class="contact-cta wrap"><h2>{% if is_ar %}تعرف على ما نصنعه.{% else %}Discover what we make.{% endif %}</h2><a class="button" href="{{ prefix }}/products/">{% if is_ar %}اكتشف المنتجات{% else %}Explore products{% endif %}<span>↗</span></a></section>{% endblock %}
+{% extends 'site/base.html' %}
+{% load static site_tags %}
+{% block title %}{{ t.nav_about }}{% endblock %}
+{% block description %}{{ t.about_page_text }}{% endblock %}
+{% block content %}
+{% include 'site/parts/page_hero.html' with title=t.about_title lead=t.about_page_text image='img/factory.webp' %}
+
+<section>
+  <div class="wrap split">
+    <div class="split-ph rv"><img src="{% static 'img/factory.webp' %}" alt="{{ t.factory_name }}"></div>
+    <div>
+      <h2 class="rv">{{ t.factory_name }}</h2>
+      {% translated settings 'about' lang as about %}
+      <p class="lead rv">{{ about|default:t.group_text }}</p>
+      <ul class="checks rv">
+        <li>{{ t.about_point_1 }}</li>
+        <li>{{ t.about_point_2 }}</li>
+        <li>{{ t.about_point_3 }}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap">
+    <div class="sec-title"><div><h2 class="rv">{{ t.journey_title }}</h2></div></div>
+    <ol class="timeline">
+      <li class="rv"><b>1994</b><p>{{ t.tl_1994 }}</p></li>
+      <li class="rv"><b>2006</b><p>{{ t.tl_2006 }}</p></li>
+      <li class="rv"><b>2009</b><p>{{ t.tl_2009 }}</p></li>
+      <li class="rv"><b>2020</b><p>{{ t.tl_2020 }}</p></li>
+      <li class="rv"><b>2023</b><p>{{ t.tl_2023 }}</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <h2 class="rv" style="margin-bottom:var(--s4)">{{ t.how_title }}</h2>
+      <ol class="steps two">
+        <li class="rv"><div><b>{{ t.step_1 }}</b><span>{{ t.step_1_text }}</span></div></li>
+        <li class="rv"><div><b>{{ t.step_2 }}</b><span>{{ t.step_2_text }}</span></div></li>
+        <li class="rv"><div><b>{{ t.step_3 }}</b><span>{{ t.step_3_text }}</span></div></li>
+        <li class="rv"><div><b>{{ t.step_4 }}</b><span>{{ t.step_4_text }}</span></div></li>
+        <li class="rv"><div><b>{{ t.step_5 }}</b><span>{{ t.step_5_text }}</span></div></li>
+        <li class="rv"><div><b>{{ t.step_6 }}</b><span>{{ t.step_6_text }}</span></div></li>
+      </ol>
+    </div>
+    <div class="split-ph rv"><img src="{% static 'img/production.webp' %}" alt="" loading="lazy"></div>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap center">
+    <img class="rv" src="{% static 'img/lockup.png' %}" alt="" style="height:110px;width:auto;margin:0 auto var(--s3)">
+    <h2 class="rv">{{ t.group_title }}</h2>
+    <p class="lead rv">{{ t.group_text }}</p>
+  </div>
+</section>
+{% include 'site/parts/contact_band.html' %}
+{% endblock %}

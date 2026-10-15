@@ -1,1 +1,86 @@
-{% extends 'site/base.html' %}{% load static site_tags %}{% block title %}{% translated product 'title' lang %} | ADAFNIA{% endblock %}{% block content %}<div class="wrap page-heading"><div class="breadcrumb"><a href="{{ prefix }}/products/">{% if is_ar %}المنتجات{% else %}Products{% endif %}</a> / {% translated product.category 'title' lang %}</div></div><section class="product-detail wrap"><div>{% if product.image %}<img src="{{ product.image.url }}" alt="{% translated product 'title' lang %}">{% else %}<img src="{% static 'img/pipes.webp' %}" alt="{% translated product 'title' lang %}">{% endif %}</div><div><span class="technical">{{ product.material }}</span><h1>{% translated product 'title' lang %}</h1><p>{% translated product 'description' lang %}</p><a class="button" href="{{ prefix }}/contact/?product={{ product.pk }}">{% if is_ar %}اطلب عرض سعر{% else %}Request a quote{% endif %}<span aria-hidden="true">↗</span></a><a class="inline-link section-link" style="display:flex" href="{{ prefix }}/resources/">{% if is_ar %}الكتالوج والمراجع الفنية{% else %}Catalogue & technical resources{% endif %}<span>↗</span></a></div></section><section class="spec-section wrap"><h2>{% if is_ar %}المقاسات والمواصفات{% else %}Dimensions & specifications{% endif %}</h2>{% if variants %}<form class="filters" data-spec-filters style="margin-top:25px"><div class="field"><label for="diameter">{% if is_ar %}القطر (مم){% else %}Diameter (mm){% endif %}</label><select id="diameter" name="diameter"><option value="">{% if is_ar %}جميع الأقطار{% else %}All diameters{% endif %}</option>{% for value in diameters %}<option value="{{ value }}">{{ value }}</option>{% endfor %}</select></div><div class="field"><label for="pressure">{% if is_ar %}الضغط (بار){% else %}Pressure (bar){% endif %}</label><select id="pressure" name="pressure"><option value="">{% if is_ar %}جميع الضغوط{% else %}All pressures{% endif %}</option>{% for value in pressures %}<option value="{{ value }}">{{ value }}</option>{% endfor %}</select></div><button class="button button-secondary" type="reset">{% if is_ar %}إعادة الضبط{% else %}Reset{% endif %}</button></form><div class="table-scroll" tabindex="0" role="region" aria-label="{% if is_ar %}جدول المواصفات{% else %}Specifications table{% endif %}"><table class="spec-table"><thead><tr><th>{% if is_ar %}القطر (مم){% else %}Diameter (mm){% endif %}</th><th>{% if is_ar %}الضغط (بار){% else %}Pressure (bar){% endif %}</th><th>SDR</th><th>{% if is_ar %}السماكة (مم){% else %}Wall (mm){% endif %}</th><th>{% if is_ar %}الوزن (كجم/م){% else %}Weight (kg/m){% endif %}</th><th>{% if is_ar %}الطول (م){% else %}Length (m){% endif %}</th><th></th></tr></thead><tbody>{% for variant in variants %}<tr data-variant data-diameter="{{ variant.diameter_mm }}" data-pressure="{{ variant.pressure_bar|default_if_none:'' }}"><td>{{ variant.diameter_mm|floatformat:'-2' }}</td><td>{{ variant.pressure_bar|default_if_none:'-' }}</td><td>{{ variant.sdr|default_if_none:'-' }}</td><td>{{ variant.wall_mm|default_if_none:'-' }}</td><td>{{ variant.weight_kg_m|default_if_none:'-' }}</td><td>{{ variant.length_m|default_if_none:'-' }}</td><td><a class="inline-link" href="{{ prefix }}/contact/?product={{ product.pk }}&variant={{ variant.pk }}">{% if is_ar %}طلب{% else %}Enquire{% endif %}<span>↗</span></a></td></tr>{% endfor %}<tr data-no-variants hidden><td colspan="7">{% if is_ar %}لا توجد مقاسات مطابقة لهذه الفلاتر.{% else %}No specifications match these filters.{% endif %}</td></tr></tbody></table></div>{% else %}<div class="empty-state" style="margin-top:25px"><h3>{% if is_ar %}المواصفات التفصيلية عند الطلب{% else %}Detailed specifications on request{% endif %}</h3><p>{% if is_ar %}تواصل مع فريق المبيعات لتأكيد المقاسات وفئات الضغط المناسبة لمشروعك.{% else %}Contact our sales team to confirm the dimensions and pressure classes for your project.{% endif %}</p><a class="inline-link section-link" href="{{ prefix }}/contact/?product={{ product.pk }}">{% if is_ar %}اطلب عرض سعر{% else %}Request a quote{% endif %}<span>↗</span></a></div>{% endif %}</section>{% endblock %}
+{% extends 'site/base.html' %}
+{% load site_tags %}
+{% block title %}{% translated product 'title' lang %}{% endblock %}
+{% block description %}{% translated product 'description' lang %}{% endblock %}
+{% block content %}
+{% translated product 'title' lang as ptitle %}
+{% include 'site/parts/page_hero.html' with title=ptitle image='img/pipes.webp' parent_url=prefix|add:'/products/' parent_title=t.our_products %}
+
+<section>
+  <div class="wrap product-top">
+    <div class="split-ph rv">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ ptitle }}">{% endif %}</div>
+    <div>
+      <div class="facts-row rv">
+        {% if product.material %}<span class="pill">{{ product.material }}</span>{% endif %}
+        <span class="pill">{% translated product.category 'title' lang %}</span>
+      </div>
+      <h2 class="rv">{{ ptitle }}</h2>
+      <p class="lead rv">{% translated product 'description' lang %}</p>
+      <div class="actions rv" style="margin-top:var(--s3)">
+        <a class="btn" href="{{ prefix }}/contact/?product={{ product.pk }}">{{ t.request_quote }}</a>
+        {% if wa_number %}<a class="btn wa" href="https://wa.me/{{ wa_number }}?text={{ t.wa_quote_msg|urlencode }}%20{{ ptitle|urlencode }}" target="_blank" rel="noopener">{% include 'site/parts/icon.html' with name='wa' %}{{ t.whatsapp_us }}</a>{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tint" id="sizes">
+  <div class="wrap">
+    <div class="sec-title"><div><h2 class="rv">{{ t.sizes_title }}</h2><p class="rv">{{ t.sizes_text }}</p></div></div>
+    {% if variants %}
+      <div class="selector" id="sizePicker">
+        <div class="rv">
+          <div class="picker"><h3>{{ t.diameter }} ({{ t.unit_mm }})</h3><div class="chips" id="pickDia"></div></div>
+          <div class="picker"><h3>{{ t.pressure }}</h3><div class="chips" id="pickPn"></div></div>
+        </div>
+        <div class="result rv" aria-live="polite">
+          <div class="result-title" id="rTitle"></div>
+          <div class="result-sub" id="rSub"></div>
+          <dl id="rValues">
+            <div><dt>{{ t.wall }}</dt><dd class="ltr" id="rWall"></dd></div>
+            <div><dt>{{ t.inner }}</dt><dd class="ltr" id="rInner"></dd></div>
+            <div><dt>{{ t.weight }}</dt><dd class="ltr" id="rWeight"></dd></div>
+          </dl>
+          <p class="na" id="rNA" hidden>{{ t.not_in_class }}</p>
+          <div class="actions">
+            {% if wa_number %}<a class="btn wa block" id="rWa" href="#" target="_blank" rel="noopener">{% include 'site/parts/icon.html' with name='wa' %}{{ t.quote_this_size }}</a>{% endif %}
+            <a class="btn soft block" id="rQuote" href="{{ prefix }}/contact/?product={{ product.pk }}">{{ t.request_quote }}</a>
+          </div>
+        </div>
+      </div>
+
+      <details class="table-wrap rv">
+        <summary>{{ t.full_table }}</summary>
+        <div class="table-scroll">
+          <table class="sizes" id="sizesTable">
+            <thead><tr><th>{{ t.diameter }}</th><th>{{ t.pressure }}</th><th>SDR</th><th>{{ t.wall }}</th><th>{{ t.weight }}</th>{% if variants.0.length_m %}<th>{{ t.length }}</th>{% endif %}</tr></thead>
+            <tbody>
+              {% for v in variants %}
+              <tr data-d="{{ v.diameter_mm|floatformat:'0' }}" data-p="{% if v.pressure_bar %}{{ v.pressure_bar|floatformat:'-1' }}{% endif %}">
+                <td class="ltr">{{ v.diameter_mm|floatformat:'-1' }} {{ t.unit_mm }}</td>
+                <td class="ltr">{% if v.pressure_bar %}{{ v.pressure_bar|floatformat:'-1' }} {{ t.unit_bar }}{% else %}—{% endif %}</td>
+                <td>{{ v.sdr|floatformat:'-1'|default:'—' }}</td>
+                <td class="ltr">{% if v.wall_mm %}{{ v.wall_mm|floatformat:'1' }} {{ t.unit_mm }}{% else %}—{% endif %}</td>
+                <td class="ltr">{% if v.weight_kg_m %}{{ v.weight_kg_m|floatformat:'-3' }} {{ t.unit_kgm }}{% else %}—{% endif %}</td>
+                {% if variants.0.length_m %}<td class="ltr">{{ v.length_m|floatformat:'-1'|default:'—' }}</td>{% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      {{ variant_json|json_script:'variantData' }}
+      {{ picker_labels|json_script:'pickerLabels' }}
+    {% else %}
+      <div class="empty">{% include 'site/parts/icon.html' with name='doc' %}<p>{{ t.sizes_soon }}</p>
+        <div class="actions" style="justify-content:center;margin-top:var(--s3)">
+          {% if settings.profile or resources %}<a class="btn" href="{% if settings.profile %}{{ settings.profile.url }}{% else %}{{ resources.0.file.url }}{% endif %}" download>{{ t.download_catalogue }}</a>{% endif %}
+          <a class="btn soft" href="{{ prefix }}/contact/?product={{ product.pk }}">{{ t.request_quote }}</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% include 'site/parts/contact_band.html' %}
+{% endblock %}
