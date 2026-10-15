@@ -54,7 +54,7 @@
     <div class="sec-title">
       <div><h2 class="rv">{{ t.solutions_title }}</h2><p class="rv">{{ t.solutions_text }}</p></div>
     </div>
-    <div class="tiles">
+    <div class="tiles swipe">
       <a class="tile rv" href="{{ prefix }}/products/"><img src="{% static 'img/coiling.webp' %}" alt="" loading="lazy"><div><h3>{{ t.sol_irrigation }}</h3><p>{{ t.sol_irrigation_text }}</p></div></a>
       <a class="tile rv" href="{{ prefix }}/products/"><img src="{% static 'img/pipes.webp' %}" alt="" loading="lazy"><div><h3>{{ t.sol_water }}</h3><p>{{ t.sol_water_text }}</p></div></a>
       <a class="tile rv" href="{{ prefix }}/products/"><img src="{% static 'img/production.webp' %}" alt="" loading="lazy"><div><h3>{{ t.sol_infra }}</h3><p>{{ t.sol_infra_text }}</p></div></a>
@@ -68,7 +68,7 @@
       <div><h2 class="rv">{{ t.our_products }}</h2><p class="rv">{{ t.products_text }}</p></div>
       <a class="btn soft rv" href="{{ prefix }}/products/">{{ t.all_products }}</a>
     </div>
-    <div class="grid-3">
+    <div class="grid-3 swipe">
       {% for product in products|slice:':5' %}{% include 'site/parts/product_card.html' %}{% endfor %}
       {% if settings.profile or resources %}
       <div class="card cta rv">
@@ -124,7 +124,7 @@
       <div><h2 class="rv">{{ t.news_title }}</h2></div>
       <a class="btn soft rv" href="{{ prefix }}/news/">{{ t.all_news }}</a>
     </div>
-    <div class="grid-3">
+    <div class="grid-3 swipe">
       {% for article in news|slice:':3' %}{% include 'site/parts/news_card.html' %}{% endfor %}
     </div>
   </div>

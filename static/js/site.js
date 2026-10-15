@@ -8,7 +8,11 @@
 
   /* ---------- header: transparent over the hero, solid after scrolling ---------- */
   var header = document.getElementById('siteHeader');
-  function setHeader() { header.classList.toggle('solid', window.scrollY > 40); }
+  var mBar = document.getElementById('mBar');
+  function setHeader() {
+    header.classList.toggle('solid', window.scrollY > 40);
+    if (mBar) mBar.classList.toggle('show', window.scrollY > window.innerHeight * 0.5);
+  }
   window.addEventListener('scroll', setHeader, { passive: true });
   setHeader();
 
@@ -132,8 +136,18 @@
   if (pressures.length) chips(pnEl, pressures, labels.bar, 'p');
   else pnEl.closest('.picker').hidden = true;
 
+  // On phones the diameters sit in one swipeable line: keep the chosen one in view (horizontal only).
+  function centerChip(row) {
+    if (row.scrollWidth <= row.clientWidth) return;
+    var on = row.querySelector('[aria-pressed="true"]');
+    if (!on) return;
+    var r = on.getBoundingClientRect(), c = row.getBoundingClientRect();
+    row.scrollBy({ left: (r.left + r.width / 2) - (c.left + c.width / 2), behavior: reduce ? 'auto' : 'smooth' });
+  }
+
   function render() {
     diaEl.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.v) === state.d)); });
+    centerChip(diaEl);
     pnEl.querySelectorAll('button').forEach(function (b) {
       var p = Number(b.dataset.v);
       b.setAttribute('aria-pressed', String(p === state.p));

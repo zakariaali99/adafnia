@@ -9,7 +9,7 @@
         <a class="btn light" href="{{ prefix }}/contact/">{{ t.request_quote }}</a>
       </div>
     </div>
-    <div class="branches">
+    <div class="branches swipe">
       {% for branch in branches %}{% include 'site/parts/branch.html' %}{% endfor %}
     </div>
     {% translated settings 'address' lang as address %}

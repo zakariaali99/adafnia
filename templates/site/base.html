@@ -52,6 +52,12 @@
     {% block content %}{% endblock %}
   </main>
 
+  <nav class="m-bar" id="mBar" aria-label="{{ t.nav_contact }}">
+    {% if settings.phone %}<a href="tel:{{ settings.phone|cut:' ' }}">{% include 'site/parts/icon.html' with name='phone' %}<span>{{ t.m_call }}</span></a>{% endif %}
+    {% if wa_number %}<a class="wa" href="https://wa.me/{{ wa_number }}" target="_blank" rel="noopener">{% include 'site/parts/icon.html' with name='wa' %}<span>{{ t.m_whatsapp }}</span></a>{% endif %}
+    <a class="quote" href="{{ prefix }}/contact/">{% include 'site/parts/icon.html' with name='quote' %}<span>{{ t.m_quote }}</span></a>
+  </nav>
+
   <footer class="site-footer">
     <div class="wrap">
       <div class="footer-top">
