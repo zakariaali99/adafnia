@@ -1,6 +1,6 @@
 # Adafnia factory
 
-Django 5.2 bilingual factory site with a custom Arabic staff dashboard. Python 3.11+ recommended. Final deployment directory: `/Users/zakaria/projects/Claude/adafnia`; implementation staging directory: `/Users/zakaria/projects/Claude/talks./adafnia-build`. Preserve `reference/` when copying source to the final directory.
+Django 5.2 bilingual factory site with a custom Arabic staff dashboard. Python 3.11+ recommended. Project directory: `/Users/zakaria/projects/Claude/adafnia`. Preserve `reference/` when copying source to the server.
 
 ## Local setup
 
@@ -18,7 +18,7 @@ Environment variables must be exported by the shell or hosting environment; `.en
 
 ## Editing
 
-Manage categories before products. Products/projects default to draft. Add engineering variants separately and check `approved` only after review against the manufacturer's source. Slugs are generated automatically and hidden from employees; edits preserve existing URLs. The seed adds PE100 straight pipes and coils with extracted images, four reference projects without invented years/quantities, four actual sales centres and a factory address without assigning a sales telephone to the factory. Existing products and branches are never corrected or unpublished by the seed. No database is cleared. Certificate expiry archival remains date-based. Sales-centre additional phone numbers are preserved in bilingual descriptions. All imagery uses supplied references only; no fabricated imagery is generated. Verify contact details before publication.
+Manage categories before products. Products/projects default to draft. Add engineering variants separately and check `approved` only after review against the manufacturer's source. The sizes list filters pending/approved rows and can approve several selected rows at once (`POST /dashboard/variants/approve/` with `ids`). Slugs are generated automatically and hidden from employees; edits preserve existing URLs. The seed adds PE100 straight pipes and coils with extracted images, four reference projects without invented years/quantities, four actual sales centres and a factory address without assigning a sales telephone to the factory. Existing products and branches are never corrected or unpublished by the seed. No database is cleared. Certificate expiry archival remains date-based. Sales-centre additional phone numbers are preserved in bilingual descriptions. All imagery uses supplied references only; no fabricated imagery is generated. Verify contact details before publication.
 
 News with status `published` and a future `published_at` stays hidden until its scheduled time, without a worker. Times in the dashboard use Africa/Tripoli. Certificates expiring before today are excluded from current certificates and available in the archive. `seed_content` also sets expired certificates inactive; renewed certificates must be explicitly reactivated. Null expiry means no recorded expiry, not independently verified certification. Upload certificate PDFs and enter actual expiry dates from the supplied references; no certificate dates are invented. Run `python manage.py seed_content` when archival flags need updating; public expiry filtering works continuously regardless.
 
@@ -28,7 +28,7 @@ The supplied certificate PDF records ISO 9001:2015 (23.03.530-QM), ISO 14001:201
 
 ## Public template contract
 
-Backend owns `config/`, `factory/`, `templates/dashboard/`, `static/dashboard.css`, migrations, requirements and deployment docs. Frontend owns `templates/site/*`, `static/site.css`, `static/site.js` and reference assets.
+Backend owns `config/`, `factory/`, migrations, requirements and deployment docs. Frontend owns `templates/site/*`, `templates/dashboard/*`, `static/css/` (`site.css`, `dashboard.css`, `fonts.css`), `static/js/site.js`, `static/img/` and reference assets. Fonts (Almarai, OFL) and GSAP 3.13 are self-hosted under `static/fonts/` and `static/vendor/`; pages make no third-party requests. Interface copy lives in `factory/strings.py`.
 
 Every public context has `lang`, `is_ar`, `prefix`, `settings`, `current_path` (locale-free, NO leading slash), `nav_path` (locale-free with leading slash), `categories`, `branches`, `products`, `news`, `projects`, `certificates`, `archived_certificates`, `resources`, and `form`. Switch languages with `/en/{{ current_path }}` or `/ar/{{ current_path }}`. Product/news/project lists use `page_obj` with 12 items. Product filters accept `q`, `category` (primary key or legacy slug), and `page`, exposing `q` and `selected_category`. Categories shown publicly have published products.
 

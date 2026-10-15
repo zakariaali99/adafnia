@@ -44,5 +44,17 @@ The owner rejected GPT's visual layer and approved homepage mockup v2 (`mockups/
 - Product page: size picker plus full table from approved `ProductVariant` rows. WhatsApp and the contact form get the exact size.
 - Catalogue sizes (PE100, 20–225 mm × PN 4–25) are in `factory/catalogue.py`, transcribed from profile pages 7 and 10. `seed_content` adds them **unapproved**. **The local DB has them approved for the preview only. Production must be approved by the factory engineer.**
 - Data fixes: Ouagadougou hall moved to Sirte (was Tripoli). Hero tagline set to the approved headline.
-- Removed: AI-generated hero image, GPT public CSS/JS, Phosphor icon font. The dashboard still uses its own CSS and fonts.
-- GSAP 3.13 and Almarai load from CDNs (cdnjs, Google Fonts). Self-host them before launch if required.
+- Removed: AI-generated hero image, GPT public CSS/JS, Phosphor icon font.
+
+### Dashboard redesign and self-hosting (15 October 2026)
+
+- Dashboard rebuilt in the same family: `templates/dashboard/*`, `static/css/dashboard.css`, inline SVG icons in `templates/dashboard/icon.html`. Home shows alerts (no valid certificate, expiring certificates, pending sizes, draft products), recent enquiries and content counts. Lists have thumbnails and status pills. Forms are two-column with Arabic/English pairs, switches and an Arabic file picker. Mobile uses a drawer.
+- Sizes: pending/approved filter, search by product name or diameter, bulk approval by id. Engineer sign-off is a single screen: Sizes → Pending → select all → Approve.
+- Almarai (OFL) and GSAP 3.13 are self-hosted (`static/fonts/almarai/`, `static/vendor/gsap/`). There are no third-party requests. Old Cairo/IBM Plex fonts and GPT dashboard CSS were removed.
+- `check --deploy` passes with production env vars. Deploy steps: README → Production / Passenger.
+
+### Before launch
+
+1. Factory: renewed ISO certificates; confirm the Ouagadougou hall is in Sirte; photo shoot; engineer approves the 81 sizes.
+2. Hosting: cPanel/hosting access and the domain. Then set env vars, migrate, `seed_content`, create the owner account, `collectstatic`, and configure media serving (README).
+
