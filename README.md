@@ -46,6 +46,21 @@ Install requirements in the hosting virtualenv, point Passenger's application ro
 
 Terminate HTTPS at a correctly configured trusted server. If TLS terminates at a proxy, configure HTTPS recognition there; this app deliberately does not globally trust spoofable forwarding headers. Redirect HTTP to HTTPS. Serve `/static/` from `staticfiles/` (WhiteNoise also handles collected static) and `/media/` as untrusted downloads with no script execution, `X-Content-Type-Options: nosniff`, and preferably a separate cookie-free media host. Never serve the project root, database or reference source directory as a web directory. Reference artwork intended for the site must be copied to public static assets by the frontend build. Back up database and media together. Use a production database account with least privilege and keep secrets outside the source tree.
 
+### Libyan Spider cPanel checklist (Setup Python App)
+
+| Variable | Value |
+|---|---|
+| `DJANGO_DEBUG` | `0` |
+| `DJANGO_SECRET_KEY` | long random string (`python -c "import secrets;print(secrets.token_urlsafe(50))"`) |
+| `DJANGO_ALLOWED_HOSTS` | `example.ly,www.example.ly` (replace with the real domain) |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://example.ly,https://www.example.ly` |
+| `DATABASE_URL` | the cPanel PostgreSQL/MySQL URL, or leave unset for SQLite |
+| `DJANGO_MEDIA_ROOT` | `/home/<cpanel-user>/public_html/media` so Apache serves uploads at `/media/` |
+| `DJANGO_BEHIND_PROXY` | only `1` on a VPS where nginx terminates TLS and sets `X-Forwarded-Proto` |
+| `DJANGO_LOG_LEVEL` | optional, default `WARNING`; errors go to the Passenger error log |
+
+Order: upload the code (without `db.sqlite3`, `media/`, `LOCAL_ACCESS.md`), install `requirements.txt`, then run the commands below, `python manage.py createsuperuser` for the owner, and `python manage.py seed_content` once. Enable AutoSSL before switching `DJANGO_DEBUG` to `0`, since the site redirects to HTTPS. Uploaded files are deleted together with their records, and replaced files are removed automatically. `404.html` and `500.html` are branded.
+
 ```sh
 python manage.py migrate
 python manage.py collectstatic --noinput

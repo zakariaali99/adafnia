@@ -120,3 +120,40 @@ class SubmissionThrottle(models.Model):
     key = models.CharField(max_length=64, unique=True)
     started_at = models.DateTimeField(default=timezone.now)
     count = models.PositiveIntegerField(default=0)
+
+
+# Uploaded files follow their records: deleting a record, clearing a file or uploading a replacement
+# removes the old file so the hosting account does not fill with orphans.
+from django.db import transaction
+from django.db.models.signals import post_delete, pre_save
+from django.dispatch import receiver
+
+
+def _file_names(instance):
+    return {f.name: getattr(instance, f.name).name for f in instance._meta.fields if isinstance(f, models.FileField)}
+
+
+def _remove_later(storage, name):
+    if name:
+        transaction.on_commit(lambda: storage.exists(name) and storage.delete(name))
+
+
+@receiver(pre_save)
+def remove_replaced_files(sender, instance, **kwargs):
+    if sender._meta.app_label != 'factory' or not instance.pk:
+        return
+    old = sender.objects.filter(pk=instance.pk).first()
+    if old is None:
+        return
+    new_names = _file_names(instance)
+    for field, name in _file_names(old).items():
+        if name and name != new_names.get(field):
+            _remove_later(getattr(old, field).storage, name)
+
+
+@receiver(post_delete)
+def remove_deleted_files(sender, instance, **kwargs):
+    if sender._meta.app_label != 'factory':
+        return
+    for field, name in _file_names(instance).items():
+        _remove_later(getattr(instance, field).storage, name)

@@ -295,7 +295,7 @@ class BackendTests(TestCase):
         detail = self.client.get(f'/en/products/{self.product.pk}/')
         self.assertEqual(list(detail.context['diameters']), [self.variant.diameter_mm])
         quote = self.client.get('/en/contact/', {'product': self.product.pk, 'variant': self.variant.pk})
-        self.assertContains(quote, 'Diameter (mm): 100.00')
+        self.assertContains(quote, 'Diameter (mm): 100<')
         self.assertContains(quote, '>Name')
         self.assertContains(quote, '>Water</option>')
         private = ProductVariant.objects.get(product=self.product, approved=False)
@@ -405,3 +405,50 @@ class BackendTests(TestCase):
         robots = self.client.get('/robots.txt', HTTP_HOST='localhost')
         self.assertContains(robots, 'Sitemap: http://localhost/sitemap.xml')
         self.assertContains(robots, 'Disallow: /dashboard/')
+
+    def test_copy_says_international_not_german_standards(self):
+        from factory.strings import STRINGS
+        for lang, table in STRINGS.items():
+            for key, value in table.items():
+                self.assertNotRegex(str(value), r'ألمان|الماني|German', f'{lang}.{key}')
+        self.assertIn('العالمية', STRINGS['ar']['lab_text'])
+        self.assertIn('international', STRINGS['en']['lab_text'])
+
+    @override_settings(DEBUG=False)
+    def test_branded_404_follows_language(self):
+        ar = self.client.get('/ar/products/no-such-pipe/')
+        self.assertEqual(ar.status_code, 404)
+        self.assertContains(ar, 'الصفحة غير موجودة', status_code=404)
+        en = self.client.get('/en/nothing/here/')
+        self.assertContains(en, 'Page not found', status_code=404)
+        self.assertContains(en, 'href="/en/products/"', status_code=404)
+
+    def test_arabic_count_agreement(self):
+        from factory.dashboard import ar_count, SIZES
+        self.assertEqual(ar_count(1, *SIZES), 'مقاس واحد')
+        self.assertEqual(ar_count(2, *SIZES), 'مقاسان')
+        self.assertEqual(ar_count(5, *SIZES), '5 مقاسات')
+        self.assertEqual(ar_count(81, *SIZES), '81 مقاساً')
+        self.assertEqual(ar_count(111, *SIZES), '111 مقاساً')
+
+    def test_deleted_and_replaced_files_are_removed(self):
+        with TemporaryDirectory() as media, override_settings(MEDIA_ROOT=media):
+            from .models import Resource
+            from django.core.files.base import ContentFile
+            pdf = b'%PDF-1.4\n%%EOF'
+            with self.captureOnCommitCallbacks(execute=True):
+                resource = Resource.objects.create(title_ar='ملف', file=ContentFile(pdf, name='a.pdf'))
+            first = resource.file.name
+            storage = resource.file.storage
+            self.assertTrue(storage.exists(first))
+            with self.captureOnCommitCallbacks(execute=True):
+                resource.file = ContentFile(pdf, name='b.pdf')
+                resource.save()
+            self.assertFalse(storage.exists(first))
+            second = resource.file.name
+            with self.captureOnCommitCallbacks(execute=True):
+                resource.save()
+            self.assertTrue(storage.exists(second))
+            with self.captureOnCommitCallbacks(execute=True):
+                resource.delete()
+            self.assertFalse(storage.exists(second))

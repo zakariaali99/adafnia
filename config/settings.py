@@ -32,7 +32,15 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 if not DEBUG:
     STORAGES = {'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
                 'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'}}
-MEDIA_ROOT = BASE_DIR / 'media'
+# cPanel: point DJANGO_MEDIA_ROOT at a folder inside public_html (e.g. ~/public_html/media) so Apache serves uploads directly.
+MEDIA_ROOT = Path(os.environ['DJANGO_MEDIA_ROOT']) if os.environ.get('DJANGO_MEDIA_ROOT') else BASE_DIR / 'media'
+# Only on a VPS where nginx terminates TLS and sets X-Forwarded-Proto itself.
+if os.environ.get('DJANGO_BEHIND_PROXY') == '1':
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Production errors go to stderr, which Passenger/cPanel writes to the app's error log.
+LOGGING = {'version': 1, 'disable_existing_loggers': False,
+           'handlers': {'console': {'class': 'logging.StreamHandler'}},
+           'loggers': {'django': {'handlers': ['console'], 'level': os.environ.get('DJANGO_LOG_LEVEL', 'WARNING')}}}
 MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/dashboard/login/'

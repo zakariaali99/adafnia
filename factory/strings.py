@@ -123,8 +123,10 @@ STRINGS = {
 
         # quality
         'quality_page_text': 'نراقب الجودة من المادة الخام حتى المنتج النهائي.',
+        'nf_title': 'الصفحة غير موجودة',
+        'nf_text': 'ربما تغيّر الرابط أو حُذفت الصفحة. يمكنك العودة للرئيسية أو تصفح منتجاتنا.',
         'lab_title': 'مختبر داخل المصنع',
-        'lab_text': 'كل دفعة إنتاج تمر على مختبر المصنع قبل خروجها، لنتأكد أن الأنبوب مطابق للمواصفات.',
+        'lab_text': 'كل دفعة إنتاج تمر على مختبر المصنع قبل خروجها، لنتأكد أن الأنبوب مطابق للمواصفات العالمية.',
         'tests_raw': 'اختبارات المادة الخام',
         'tests_final': 'اختبارات المنتج النهائي',
         'test_density': 'الكثافة',
@@ -290,8 +292,10 @@ STRINGS = {
         'group_text': 'Adafnia is one of the factories of Alshoufan Plastic Industries, part of Almejarri Holding Group since 1994.',
 
         'quality_page_text': 'We control quality from raw material to finished pipe.',
+        'nf_title': 'Page not found',
+        'nf_text': 'The link may have changed or the page was removed. Head back home or browse our products.',
         'lab_title': 'A laboratory inside the factory',
-        'lab_text': 'Every production batch passes through our lab before it leaves, so each pipe meets its specification.',
+        'lab_text': 'Every production batch passes through our lab before it leaves, so each pipe meets international standards.',
         'tests_raw': 'Raw material tests',
         'tests_final': 'Finished product tests',
         'test_density': 'Density',

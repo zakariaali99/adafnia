@@ -41,6 +41,7 @@ The owner rejected GPT's visual layer and approved homepage mockup v2 (`mockups/
 
 - Public templates: `templates/site/` + `templates/site/parts/`. Styles: `static/css/site.css` (tokens at the top, formatted). Behaviour: `static/js/site.js`.
 - Interface copy (AR/EN): `factory/strings.py`, available as `{{ t.key }}`. Company content stays in the DB.
+- Wording rule (owner, 10 Nov 2026): say «مواصفات عالمية» / "international standards", never «مواصفات ألمانية» / German standards. A test guards the interface copy.
 - Product page: size picker plus full table from approved `ProductVariant` rows. WhatsApp and the contact form get the exact size.
 - Catalogue sizes (PE100, 20–225 mm × PN 4–25) are in `factory/catalogue.py`, transcribed from profile pages 7 and 10. `seed_content` adds them **unapproved**. **The local DB has them approved for the preview only. Production must be approved by the factory engineer.**
 - Data fixes: Ouagadougou hall moved to Sirte (was Tripoli). Hero tagline set to the approved headline.

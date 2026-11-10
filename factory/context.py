@@ -5,7 +5,7 @@ from .strings import STRINGS
 
 
 def site_context(request):
-    lang = getattr(request, 'site_lang', 'ar')
+    lang = getattr(request, 'site_lang', None) or ('en' if request.path.startswith('/en/') else 'ar')
     parts = request.path.split('/', 2)
     current = '/' + parts[2] if len(parts) > 2 and parts[1] in ('ar', 'en') else request.path
     settings = SiteSettings.objects.first() or SiteSettings()

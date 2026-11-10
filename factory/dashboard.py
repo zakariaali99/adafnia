@@ -18,6 +18,20 @@ from PIL import Image, ImageOps
 from .views import allow_submission
 from . import models
 
+
+def ar_count(n, one, two, few, many):
+    """Arabic number agreement: 1 مقاس واحد، 2 مقاسان، 3–10 مقاسات، 11+ مقاساً."""
+    if n == 1:
+        return one
+    if n == 2:
+        return two
+    if 3 <= n % 100 <= 10:
+        return f'{n} {few}'
+    return f'{n} {many}'
+
+
+SIZES = ('مقاس واحد', 'مقاسان', 'مقاسات', 'مقاساً')
+
 REGISTRY = {
     'categories': (models.Category, 'التصنيفات'), 'products': (models.Product, 'المنتجات'),
     'variants': (models.ProductVariant, 'المقاسات'), 'news': (models.NewsArticle, 'الأخبار والجدولة'),
@@ -127,6 +141,8 @@ def index(request):
         'pending_variants': models.ProductVariant.objects.filter(approved=False).count(),
         'draft_products': models.Product.objects.filter(is_published=False).count(),
         'recent_enquiries': models.Enquiry.objects.select_related('product')[:5],
+        'pending_label': ar_count(models.ProductVariant.objects.filter(approved=False).count(), *SIZES),
+        'draft_label': ar_count(models.Product.objects.filter(is_published=False).count(), 'منتج واحد غير منشور', 'منتجان غير منشورين', 'منتجات غير منشورة', 'منتجاً غير منشور'),
         'week_enquiries': models.Enquiry.objects.filter(created_at__gte=timezone.now() - timedelta(days=7)).count()})
 
 @staff_required
@@ -172,7 +188,7 @@ def approve_variants(request):
         return HttpResponseNotAllowed(['POST'])
     ids = [int(value) for value in request.POST.getlist('ids') if value.isdigit()]
     updated = models.ProductVariant.objects.filter(pk__in=ids, approved=False).update(approved=True)
-    messages.success(request, f'تم اعتماد {updated} مقاساً.' if updated else 'لم يتم تحديد مقاسات غير معتمدة.')
+    messages.success(request, f'تم اعتماد {ar_count(updated, *SIZES)}.' if updated else 'لم يتم تحديد مقاسات غير معتمدة.')
     return redirect(request.POST.get('next') if str(request.POST.get('next', '')).startswith('/dashboard/variants/') else '/dashboard/variants/')
 
 @staff_required

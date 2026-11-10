@@ -25,10 +25,10 @@
       {% for certificate in expiring_certificates %}<a href="/dashboard/certificates/{{ certificate.pk }}/edit/">{{ certificate }}</a> ({{ certificate.expires_on|date:'Y-m-d' }}){% if not forloop.last %}، {% endif %}{% endfor %}</span></div>
   {% endif %}
   {% if pending_variants %}
-    <a class="alert info" href="/dashboard/variants/?state=pending">{% include 'dashboard/icon.html' with name='ruler' %}<span><b>{{ pending_variants }} مقاساً بانتظار الاعتماد.</b> لا تظهر للزوار حتى يراجعها المهندس ويعتمدها.</span></a>
+    <a class="alert info" href="/dashboard/variants/?state=pending">{% include 'dashboard/icon.html' with name='ruler' %}<span><b>{{ pending_label }} بانتظار الاعتماد.</b> لا تظهر للزوار حتى يراجعها المهندس ويعتمدها.</span></a>
   {% endif %}
   {% if draft_products %}
-    <a class="alert info" href="/dashboard/products/">{% include 'dashboard/icon.html' with name='box' %}<span><b>{{ draft_products }} منتج غير منشور.</b> فعّل «منشور للزوار» عندما يكون جاهزاً.</span></a>
+    <a class="alert info" href="/dashboard/products/">{% include 'dashboard/icon.html' with name='box' %}<span><b>{{ draft_label }}.</b> فعّل «منشور للزوار» عندما يكون جاهزاً.</span></a>
   {% endif %}
 </section>
 {% endif %}
@@ -51,7 +51,7 @@
         </li>
         {% endfor %}
       </ul>
-      <p class="muted small">{{ week_enquiries }} طلب خلال آخر 7 أيام.</p>
+      <p class="muted small">طلبات آخر 7 أيام: {{ week_enquiries }}</p>
     {% else %}
       <div class="empty">{% include 'dashboard/icon.html' with name='inbox' %}<p>لا توجد طلبات بعد. ستظهر هنا رسائل نموذج «تواصل معنا».</p></div>
     {% endif %}

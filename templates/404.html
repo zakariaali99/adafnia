@@ -1,0 +1,12 @@
+{% extends 'site/base.html' %}
+{% block title %}{{ t.nf_title }}{% endblock %}
+{% block content %}
+{% include 'site/parts/page_hero.html' with title=t.nf_title lead=t.nf_text image='img/pipes.webp' %}
+<section>
+  <div class="wrap" style="display:flex;gap:var(--s3);flex-wrap:wrap;justify-content:center">
+    <a class="btn" href="{{ prefix }}/">{{ t.home }}</a>
+    <a class="btn soft" href="{{ prefix }}/products/">{{ t.our_products }}</a>
+    <a class="btn soft" href="{{ prefix }}/contact/">{{ t.nav_contact }}</a>
+  </div>
+</section>
+{% endblock %}

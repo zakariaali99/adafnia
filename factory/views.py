@@ -72,7 +72,7 @@ def localized_page(request, lang, page='home', slug=None):
             initial['product'] = variant.product_id
             title = (variant.product.title_en or variant.product.title_ar) if lang == 'en' else variant.product.title_ar
             dimensions = [('diameter_mm', 'Diameter (mm)', 'القطر (مم)'), ('pressure_bar', 'Pressure (bar)', 'الضغط (بار)'), ('sdr', 'SDR', 'SDR'), ('wall_mm', 'Wall (mm)', 'السماكة (مم)'), ('weight_kg_m', 'Weight (kg/m)', 'الوزن (كجم/م)'), ('length_m', 'Length (m)', 'الطول (م)')]
-            initial['message'] = title + '\n' + '\n'.join(f'{en if lang == "en" else ar}: {getattr(variant, field)}' for field, en, ar in dimensions if getattr(variant, field) is not None)
+            initial['message'] = title + '\n' + '\n'.join(f'{en if lang == "en" else ar}: {getattr(variant, field).normalize():f}' for field, en, ar in dimensions if getattr(variant, field) is not None)
             initial['subject'] = 'Request a quote' if lang == 'en' else 'طلب عرض سعر'
     data['form'] = EnquiryForm(lang=lang, initial=initial)
     if page.endswith('_detail'):
