@@ -39,9 +39,9 @@
           <div class="result-title" id="rTitle"></div>
           <div class="result-sub" id="rSub"></div>
           <dl id="rValues">
-            <div><dt>{{ t.wall }}</dt><dd class="ltr" id="rWall"></dd></div>
-            <div><dt>{{ t.inner }}</dt><dd class="ltr" id="rInner"></dd></div>
-            <div><dt>{{ t.weight }}</dt><dd class="ltr" id="rWeight"></dd></div>
+            <div><dt>{{ t.wall }}</dt><dd id="rWall"></dd></div>
+            <div><dt>{{ t.inner }}</dt><dd id="rInner"></dd></div>
+            <div><dt>{{ t.weight }}</dt><dd id="rWeight"></dd></div>
           </dl>
           <p class="na" id="rNA" hidden>{{ t.not_in_class }}</p>
           <div class="actions">
@@ -58,13 +58,13 @@
             <thead><tr><th>{{ t.diameter }}</th><th>{{ t.pressure }}</th><th>SDR</th><th>{{ t.wall }}</th><th>{{ t.weight }}</th>{% if variants.0.length_m %}<th>{{ t.length }}</th>{% endif %}</tr></thead>
             <tbody>
               {% for v in variants %}
-              <tr data-d="{{ v.diameter_mm|floatformat:'0' }}" data-p="{% if v.pressure_bar %}{{ v.pressure_bar|floatformat:'-1' }}{% endif %}">
-                <td class="ltr">{{ v.diameter_mm|floatformat:'-1' }} {{ t.unit_mm }}</td>
-                <td class="ltr">{% if v.pressure_bar %}{{ v.pressure_bar|floatformat:'-1' }} {{ t.unit_bar }}{% else %}—{% endif %}</td>
-                <td>{{ v.sdr|floatformat:'-1'|default:'—' }}</td>
-                <td class="ltr">{% if v.wall_mm %}{{ v.wall_mm|floatformat:'1' }} {{ t.unit_mm }}{% else %}—{% endif %}</td>
-                <td class="ltr">{% if v.weight_kg_m %}{{ v.weight_kg_m|floatformat:'-3' }} {{ t.unit_kgm }}{% else %}—{% endif %}</td>
-                {% if variants.0.length_m %}<td class="ltr">{{ v.length_m|floatformat:'-1'|default:'—' }}</td>{% endif %}
+              <tr data-d="{{ v.diameter_mm|floatformat:'-2u' }}" data-p="{% if v.pressure_bar %}{{ v.pressure_bar|floatformat:'-2u' }}{% endif %}">
+                <td><bdi>{{ v.diameter_mm|floatformat:'-1u' }}</bdi> {{ t.unit_mm }}</td>
+                <td>{% if v.pressure_bar %}<bdi>{{ v.pressure_bar|floatformat:'-1u' }}</bdi> {{ t.unit_bar }}{% else %}—{% endif %}</td>
+                <td><bdi>{{ v.sdr|floatformat:'-1u'|default:'—' }}</bdi></td>
+                <td>{% if v.wall_mm %}<bdi>{{ v.wall_mm|floatformat:'1u' }}</bdi> {{ t.unit_mm }}{% else %}—{% endif %}</td>
+                <td>{% if v.weight_kg_m %}<bdi>{{ v.weight_kg_m|floatformat:'-3u' }}</bdi> <bdi>{{ t.unit_kgm }}</bdi>{% else %}—{% endif %}</td>
+                {% if variants.0.length_m %}<td>{% if v.length_m %}<bdi>{{ v.length_m|floatformat:'-1u' }}</bdi> {{ t.unit_m|default:'' }}{% else %}—{% endif %}</td>{% endif %}
               </tr>
               {% endfor %}
             </tbody>

@@ -152,11 +152,11 @@
     document.getElementById('rValues').hidden = !v;
     document.getElementById('rNA').hidden = !!v;
     if (v) {
-      document.getElementById('rWall').innerHTML = fmt(num(v.wall), 1) + '<small>' + labels.mm + '</small>';
+      document.getElementById('rWall').innerHTML = '<bdi>' + fmt(num(v.wall), 1) + '</bdi> <small>' + labels.mm + '</small>';
       var inner = num(v.wall) === null ? null : state.d - 2 * num(v.wall);
-      document.getElementById('rInner').innerHTML = fmt(inner, 1) + '<small>' + labels.mm + '</small>';
+      document.getElementById('rInner').innerHTML = '<bdi>' + fmt(inner, 1) + '</bdi> <small>' + labels.mm + '</small>';
       var w = num(v.weight);
-      document.getElementById('rWeight').innerHTML = (w === null ? '—' : w < 1 ? w.toFixed(3) : w.toFixed(2)) + '<small>' + labels.kgm + '</small>';
+      document.getElementById('rWeight').innerHTML = '<bdi>' + (w === null ? '—' : w < 1 ? w.toFixed(3) : w.toFixed(2)) + '</bdi> <small><bdi>' + labels.kgm + '</bdi></small>';
       var msg = labels.waMsg + ' ' + labels.product + ' Ø ' + state.d + ' ' + labels.mm + (pressures.length ? labels.sep + state.p + ' ' + labels.bar : '') + (v.sdr ? labels.sep + 'SDR ' + num(v.sdr) : '');
       var wa = document.getElementById('rWa');
       if (wa) wa.href = 'https://wa.me/' + labels.wa + '?text=' + encodeURIComponent(msg);
