@@ -59,7 +59,9 @@ Terminate HTTPS at a correctly configured trusted server. If TLS terminates at a
 | `DJANGO_BEHIND_PROXY` | only `1` on a VPS where nginx terminates TLS and sets `X-Forwarded-Proto` |
 | `DJANGO_LOG_LEVEL` | optional, default `WARNING`; errors go to the Passenger error log |
 
-Order: upload the code (without `db.sqlite3`, `media/`, `LOCAL_ACCESS.md`), install `requirements.txt`, then run the commands below, `python manage.py createsuperuser` for the owner, and `python manage.py seed_content` once. Enable AutoSSL before switching `DJANGO_DEBUG` to `0`, since the site redirects to HTTPS. Uploaded files are deleted together with their records, and replaced files are removed automatically. `404.html` and `500.html` are branded.
+Deployment is always through GitHub (`zakariaali99/adafnia`, private). The server clones the repo once with a read-only deploy key; every later update is `git push` locally, then `~/adafnia/deploy.sh` on the server (pull, install, migrate, collectstatic, check, restart). Production variables live in `~/.adafnia.env` on the server, outside the repo, as `export NAME=value` lines.
+
+First install: clone into `~/adafnia`, install `requirements.txt`, then run the commands below, `python manage.py createsuperuser` for the owner, and `python manage.py seed_content` once. Enable AutoSSL before switching `DJANGO_DEBUG` to `0`, since the site redirects to HTTPS. Uploaded files are deleted together with their records, and replaced files are removed automatically. `404.html` and `500.html` are branded.
 
 ```sh
 python manage.py migrate
