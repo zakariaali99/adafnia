@@ -192,7 +192,8 @@ class BackendTests(TestCase):
         self.assertEqual(self.client.get('/dashboard/').status_code, 200)
         for section in REGISTRY:
             self.assertEqual(self.client.get(f'/dashboard/{section}/').status_code, 200)
-            self.assertEqual(self.client.get(f'/dashboard/{section}/new/').status_code, 200)
+            # Enquiries come only from the public form; staff read them, they do not create them.
+            self.assertEqual(self.client.get(f'/dashboard/{section}/new/').status_code, 302 if section == 'enquiries' else 200)
 
     def test_dashboard_bulk_approve_variants(self):
         pending = ProductVariant.objects.create(product=self.product, diameter_mm=63, pressure_bar=10)
@@ -452,3 +453,20 @@ class BackendTests(TestCase):
             with self.captureOnCommitCallbacks(execute=True):
                 resource.delete()
             self.assertFalse(storage.exists(second))
+
+    def test_enquiry_is_read_only_with_contact_actions(self):
+        from factory.dashboard import wa_number
+        self.assertEqual(wa_number('091-3241428'), '218913241428')
+        self.assertEqual(wa_number('+218 91 324 1428'), '218913241428')
+        self.assertEqual(wa_number('00218913241428'), '218913241428')
+        staff = get_user_model().objects.create_user('desk', password='x-Strong-pass-123', is_staff=True)
+        self.client.force_login(staff)
+        enquiry = Enquiry.objects.create(name='سالم', phone='092-6160178', email='s@example.com', subject='عرض سعر', message='أحتاج 110 مم\nضغط 16')
+        page = self.client.get(f'/dashboard/enquiries/{enquiry.pk}/edit/')
+        self.assertContains(page, 'href="tel:092-6160178"'.replace('-', ''))
+        self.assertContains(page, 'https://wa.me/218926160178?text=')
+        self.assertContains(page, 'mailto:s@example.com')
+        self.assertContains(page, 'أحتاج 110 مم<br>ضغط 16')
+        self.assertNotContains(page, '<textarea')
+        self.assertEqual(self.client.post(f'/dashboard/enquiries/{enquiry.pk}/edit/', {'name': 'x'}).status_code, 405)
+        self.assertRedirects(self.client.get('/dashboard/enquiries/new/'), '/dashboard/enquiries/')

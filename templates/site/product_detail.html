@@ -30,8 +30,10 @@
     {% if variants %}
       <div class="selector" id="sizePicker">
         <div class="rv">
-          <div class="picker"><h3>{{ t.diameter }} ({{ t.unit_mm }})</h3><div class="chips scroll-row" id="pickDia"></div></div>
-          <div class="picker"><h3>{{ t.pressure }}</h3><div class="chips" id="pickPn"></div></div>
+          <div class="pickers">
+            <label class="picker"><span>{{ t.diameter }} ({{ t.unit_mm }})</span><select id="pickDia"></select></label>
+            <label class="picker"><span>{{ t.pressure }}</span><select id="pickPn"></select></label>
+          </div>
         </div>
         <div class="result rv" aria-live="polite">
           <div class="result-title" id="rTitle"></div>

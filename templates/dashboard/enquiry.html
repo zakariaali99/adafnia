@@ -1,0 +1,32 @@
+{% extends 'dashboard/base.html' %}
+{% block crumbs %}<a href="/dashboard/">الرئيسية</a><span aria-hidden="true">/</span><a href="/dashboard/enquiries/">{{ label }}</a><span aria-hidden="true">/</span><b>{{ object.name }}</b>{% endblock %}
+{% block content %}
+<article class="enquiry">
+  <header class="panel enq-head">
+    <span class="avatar soft" aria-hidden="true">{{ object.name|slice:':1' }}</span>
+    <div class="enq-who">
+      <h1>{{ object.name }}</h1>
+      <p class="muted"><time datetime="{{ object.created_at|date:'c' }}">{{ object.created_at|date:'Y-m-d H:i' }}</time> · منذ {{ object.created_at|timesince }}</p>
+    </div>
+  </header>
+
+  <nav class="enq-actions" aria-label="التواصل مع العميل">
+    <a class="act call" href="tel:{{ tel }}">{% include 'dashboard/icon.html' with name='phone' %}<span><b>اتصال</b><small dir="ltr">{{ object.phone }}</small></span></a>
+    {% if wa %}<a class="act wa" href="https://wa.me/{{ wa }}?text={{ wa_text|urlencode }}" target="_blank" rel="noopener">{% include 'dashboard/icon.html' with name='wa' %}<span><b>واتساب</b><small dir="ltr">+{{ wa }}</small></span></a>{% endif %}
+    {% if object.email %}<a class="act mail" href="mailto:{{ object.email }}?subject={{ mail_subject|urlencode }}">{% include 'dashboard/icon.html' with name='mail' %}<span><b>بريد إلكتروني</b><small dir="ltr">{{ object.email }}</small></span></a>{% endif %}
+  </nav>
+
+  <section class="panel enq-body">
+    <p class="enq-label">الموضوع</p>
+    <h2>{{ object.subject }}</h2>
+    {% if object.product %}<p class="enq-product">{% include 'dashboard/icon.html' with name='box' %}<a href="/dashboard/products/{{ object.product.pk }}/edit/">{{ object.product.title_ar }}</a></p>{% endif %}
+    <p class="enq-label">الرسالة</p>
+    <div class="enq-message">{{ object.message|linebreaksbr }}</div>
+  </section>
+
+  <div class="form-actions">
+    <a class="btn ghost" href="/dashboard/enquiries/">رجوع إلى الطلبات</a>
+    <a class="btn ghost danger push" href="/dashboard/enquiries/{{ object.pk }}/delete/">{% include 'dashboard/icon.html' with name='trash' %}حذف الطلب</a>
+  </div>
+</article>
+{% endblock %}

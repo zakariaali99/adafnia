@@ -191,10 +191,36 @@ def approve_variants(request):
     messages.success(request, f'تم اعتماد {ar_count(updated, *SIZES)}.' if updated else 'لم يتم تحديد مقاسات غير معتمدة.')
     return redirect(request.POST.get('next') if str(request.POST.get('next', '')).startswith('/dashboard/variants/') else '/dashboard/variants/')
 
+def wa_number(phone):
+    """Libyan numbers as WhatsApp expects them: 091-3241428 / +218 91… / 00218 91… -> 218913241428."""
+    digits = ''.join(ch for ch in phone if ch.isdigit())
+    if digits.startswith('00'):
+        digits = digits[2:]
+    if digits.startswith('0'):
+        digits = '218' + digits[1:]
+    elif len(digits) == 9 and digits.startswith('9'):
+        digits = '218' + digits
+    return digits
+
+
+def enquiry_view(request, pk):
+    """Customer requests are read, not edited: show the message with call / WhatsApp / email actions."""
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(['GET'])
+    enquiry = get_object_or_404(models.Enquiry.objects.select_related('product'), pk=pk)
+    reply = f'مرحباً {enquiry.name}، بخصوص طلبك «{enquiry.subject}» لدى مصنع الدافنية: '
+    return render(request, 'dashboard/enquiry.html', {**section_context('enquiries'), 'object': enquiry,
+        'tel': ''.join(ch for ch in enquiry.phone if ch.isdigit() or ch == '+'),
+        'wa': wa_number(enquiry.phone), 'wa_text': reply,
+        'mail_subject': f'بخصوص طلبك: {enquiry.subject}'})
+
+
 @staff_required
 def edit(request, section, pk=None):
     if section not in REGISTRY:
         raise Http404
+    if section == 'enquiries':
+        return enquiry_view(request, pk) if pk else redirect('dashboard-list', section='enquiries')
     model, label = REGISTRY[section]
     obj = get_object_or_404(model, pk=pk) if pk else None
     if section == 'settings':

@@ -119,40 +119,33 @@
   };
   var find = function (d, p) { return variants.find(function (v) { return num(v.d) === d && (p === undefined || num(v.p) === p); }); };
 
-  function chips(el, values, unit, key) {
+  // Diameter and pressure are two compact dropdowns; pressures a diameter is not made in are disabled.
+  function fill(el, values, unit, key) {
     el.innerHTML = values.map(function (v) {
-      return '<button type="button" class="chip" data-v="' + v + '">' + v + (unit ? ' ' + unit : '') + '</button>';
+      return '<option value="' + v + '">' + v + (unit ? ' ' + unit : '') + '</option>';
     }).join('');
-    el.addEventListener('click', function (e) {
-      var b = e.target.closest('button');
-      if (!b) return;
-      state[key] = Number(b.dataset.v);
+    el.addEventListener('change', function () {
+      state[key] = Number(el.value);
       render();
     });
   }
   var diaEl = document.getElementById('pickDia');
   var pnEl = document.getElementById('pickPn');
-  chips(diaEl, diameters, '', 'd');
-  if (pressures.length) chips(pnEl, pressures, labels.bar, 'p');
+  fill(diaEl, diameters, '', 'd');
+  if (pressures.length) fill(pnEl, pressures, labels.bar, 'p');
   else pnEl.closest('.picker').hidden = true;
 
-  // On phones the diameters sit in one swipeable line: keep the chosen one in view (horizontal only).
-  function centerChip(row) {
-    if (row.scrollWidth <= row.clientWidth) return;
-    var on = row.querySelector('[aria-pressed="true"]');
-    if (!on) return;
-    var r = on.getBoundingClientRect(), c = row.getBoundingClientRect();
-    row.scrollBy({ left: (r.left + r.width / 2) - (c.left + c.width / 2), behavior: reduce ? 'auto' : 'smooth' });
-  }
-
   function render() {
-    diaEl.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.v) === state.d)); });
-    centerChip(diaEl);
-    pnEl.querySelectorAll('button').forEach(function (b) {
-      var p = Number(b.dataset.v);
-      b.setAttribute('aria-pressed', String(p === state.p));
-      b.classList.toggle('dim', !find(state.d, p));
-    });
+    if (pressures.length) {
+      var made = pressures.filter(function (p) { return find(state.d, p); });
+      // Keep the chosen class if this diameter is made in it, otherwise move to the closest one that is.
+      if (made.length && made.indexOf(state.p) < 0) {
+        state.p = made.reduce(function (a, b) { return Math.abs(b - state.p) < Math.abs(a - state.p) ? b : a; });
+      }
+      Array.prototype.forEach.call(pnEl.options, function (o) { o.disabled = made.indexOf(Number(o.value)) < 0; });
+      pnEl.value = String(state.p);
+    }
+    diaEl.value = String(state.d);
     var v = pressures.length ? find(state.d, state.p) : find(state.d);
     document.getElementById('rTitle').innerHTML = '<bdi>Ø ' + state.d + '</bdi> ' + labels.mm + (pressures.length ? ' · <bdi>' + state.p + '</bdi> ' + labels.bar : '');
     document.getElementById('rSub').textContent = v && v.sdr ? 'SDR ' + num(v.sdr) : '';
