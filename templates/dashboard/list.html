@@ -29,7 +29,7 @@
 <div class="panel flush">
   {% if page_obj.object_list %}
   <div class="table-scroll">
-  <table class="rows">
+  <table class="rows{% if section == 'variants' %} v{% endif %}">
     <thead><tr>
       {% if section == 'variants' %}
         <th class="pick"><input type="checkbox" id="pickAll" aria-label="تحديد الكل"></th>
@@ -47,17 +47,17 @@
       <tr>
         {% if section == 'variants' %}
           <td class="pick">{% if not object.approved %}<input type="checkbox" name="ids" value="{{ object.pk }}" aria-label="تحديد Ø {{ object.diameter_mm|floatformat:'-2u' }}">{% endif %}</td>
-          <td>{{ object.product.title_ar }}</td>
-          <td class="num"><bdi>Ø {{ object.diameter_mm|floatformat:'-2u' }}</bdi></td>
-          <td class="num">{% if object.pressure_bar %}<bdi>PN {{ object.pressure_bar|floatformat:'-2u' }}</bdi>{% else %}—{% endif %}</td>
-          <td class="num">{{ object.sdr|floatformat:'-2u'|default:'—' }}</td>
-          <td class="num">{{ object.wall_mm|floatformat:'-2u'|default:'—' }}</td>
-          <td class="num">{{ object.weight_kg_m|floatformat:'-3u'|default:'—' }}</td>
-          <td>{% if object.approved %}<span class="pill ok">معتمد</span>{% else %}<span class="pill warn">بانتظار الاعتماد</span>{% endif %}</td>
+          <td class="prod">{{ object.product.title_ar }}</td>
+          <td class="num dia"><bdi>Ø {{ object.diameter_mm|floatformat:'-1u' }}</bdi></td>
+          <td class="num pn">{% if object.pressure_bar %}<bdi>PN {{ object.pressure_bar|floatformat:'-1u' }}</bdi>{% else %}—{% endif %}</td>
+          <td class="num spec" data-label="SDR"><bdi>{{ object.sdr|floatformat:'-1u'|default:'—' }}</bdi></td>
+          <td class="num spec" data-label="السماكة"><bdi>{{ object.wall_mm|floatformat:'-1u'|default:'—' }}</bdi></td>
+          <td class="num spec" data-label="الوزن"><bdi>{{ object.weight_kg_m|floatformat:'-3u'|default:'—' }}</bdi></td>
+          <td class="state">{% if object.approved %}<span class="pill ok">معتمد</span>{% else %}<span class="pill warn">بانتظار الاعتماد</span>{% endif %}</td>
         {% elif section == 'enquiries' %}
           <td><a class="title" href="/dashboard/enquiries/{{ object.pk }}/edit/"><b>{{ object.name }}</b><small dir="ltr">{{ object.phone }}</small></a></td>
           <td>{{ object.subject }}{% if object.product %}<small class="block muted">{{ object.product.title_ar }}</small>{% endif %}</td>
-          <td class="muted nowrap">{{ object.created_at|date:'Y-m-d H:i' }}</td>
+          <td class="muted nowrap"><bdi dir="ltr">{{ object.created_at|date:'Y-m-d H:i' }}</bdi></td>
         {% else %}
           <td>
             <a class="title" href="/dashboard/{{ section }}/{% if section == 'settings' %}new{% else %}{{ object.pk }}/edit{% endif %}/">
@@ -65,7 +65,7 @@
                 <span class="thumb">{% if object.image %}<img src="{{ object.image.url }}" alt="" loading="lazy">{% else %}{% include 'dashboard/icon.html' with name=icon %}{% endif %}</span>
               {% endif %}
               <span><b>{{ object.title_ar|default:object }}</b>
-                <small>{% if section == 'products' %}{{ object.category.title_ar }}{% elif section == 'news' %}{{ object.published_at|date:'Y-m-d' }}{% elif section == 'projects' %}{{ object.location_ar }}{% if object.year %} · {{ object.year }}{% endif %}{% elif section == 'certificates' %}{% if object.expires_on %}حتى {{ object.expires_on|date:'Y-m-d' }}{% endif %}{% elif section == 'branches' %}<span dir="ltr">{{ object.phone }}</span>{% elif object.title_en %}{{ object.title_en }}{% endif %}</small>
+                <small>{% if section == 'products' %}{{ object.category.title_ar }}{% elif section == 'news' %}<bdi dir="ltr">{{ object.published_at|date:'Y-m-d' }}</bdi>{% elif section == 'projects' %}{{ object.location_ar }}{% if object.year %} · {{ object.year }}{% endif %}{% elif section == 'certificates' %}{% if object.expires_on %}حتى <bdi dir="ltr">{{ object.expires_on|date:'Y-m-d' }}</bdi>{% endif %}{% elif section == 'branches' %}<span dir="ltr">{{ object.phone }}</span>{% elif object.title_en %}{{ object.title_en }}{% endif %}</small>
               </span>
             </a>
           </td>

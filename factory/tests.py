@@ -76,7 +76,7 @@ class BackendTests(TestCase):
             self.assertContains(self.client.get(f'/{lang}/resources/'), site.profile.url)
             contact = self.client.get(f'/{lang}/contact/')
             self.assertContains(contact, getattr(site, f'address_{lang}'))
-            self.assertContains(contact, 'أرقام المبيعات الإضافية 091-8070400' if lang == 'ar' else 'Additional sales numbers 091-8070400')
+            self.assertContains(contact, 'أرقام المبيعات الإضافية \u2066091-8070400\u2069' if lang == 'ar' else 'Additional sales numbers 091-8070400')
 
     def test_homepage_blank_material_never_infers_product_grade(self):
         from html.parser import HTMLParser
@@ -470,3 +470,10 @@ class BackendTests(TestCase):
         self.assertNotContains(page, '<textarea')
         self.assertEqual(self.client.post(f'/dashboard/enquiries/{enquiry.pk}/edit/', {'name': 'x'}).status_code, 405)
         self.assertRedirects(self.client.get('/dashboard/enquiries/new/'), '/dashboard/enquiries/')
+
+    def test_arabic_text_isolates_latin_number_runs(self):
+        from factory.templatetags.site_tags import isolate_ltr
+        self.assertEqual(isolate_ltr('رقم الشهادة 23.03.530-QM.'), 'رقم الشهادة ⁦23.03.530-QM⁩.')
+        self.assertEqual(isolate_ltr('حتى 2026-05-10'), 'حتى ⁦2026-05-10⁩')
+        self.assertEqual(isolate_ltr('منذ 2006 في مصراتة'), 'منذ 2006 في مصراتة')
+        self.assertEqual(isolate_ltr('Certificate 23.03.530-QM'), 'Certificate 23.03.530-QM')

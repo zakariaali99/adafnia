@@ -44,9 +44,35 @@ def has_words(text):
     """True when text holds more than phone numbers and separators."""
     return bool(WORD_RE.search(PHONE_RE.sub('', text or '')))
 
+ARABIC_RE = re.compile(r'[\u0600-\u06FF]')
+# Latin/number runs such as 23.03.530-QM, 2026-05-10, ISO 9001:2015 or PE100.
+MIXED_RE = re.compile(r'(?<![\w\u2066])([A-Za-z0-9][A-Za-z0-9.:/+_-]*[A-Za-z0-9])(?![\w])')
+
+
+def isolate_ltr(text):
+    """In Arabic text, wrap Latin/number runs in LRI…PDI so the bidi algorithm cannot flip them
+    (otherwise «رقم الشهادة 23.03.530-QM» displays as QM-23.03.530). Invisible, safe in attributes."""
+    if not text or not ARABIC_RE.search(text):
+        return text
+
+    def wrap(match):
+        token = match.group(1)
+        mixed = re.search(r'[A-Za-z]', token) and re.search(r'\d', token)
+        if mixed or re.search(r'\d[.:/-]\d', token):
+            return '\u2066' + token + '\u2069'
+        return token
+    return MIXED_RE.sub(wrap, text)
+
+
+@register.filter
+def bidi(text):
+    return isolate_ltr(text)
+
+
 @register.simple_tag
 def translated(obj, field, lang='ar'):
-    return getattr(obj, f'{field}_{lang}', '') or getattr(obj, f'{field}_ar', '') or getattr(obj, f'{field}_en', '')
+    value = getattr(obj, f'{field}_{lang}', '') or getattr(obj, f'{field}_ar', '') or getattr(obj, f'{field}_en', '')
+    return isolate_ltr(value) if isinstance(value, str) else value
 
 @register.filter
 def field(obj, name):

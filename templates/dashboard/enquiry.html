@@ -6,7 +6,7 @@
     <span class="avatar soft" aria-hidden="true">{{ object.name|slice:':1' }}</span>
     <div class="enq-who">
       <h1>{{ object.name }}</h1>
-      <p class="muted"><time datetime="{{ object.created_at|date:'c' }}">{{ object.created_at|date:'Y-m-d H:i' }}</time> · منذ {{ object.created_at|timesince }}</p>
+      <p class="muted"><time datetime="{{ object.created_at|date:'c' }}"><bdi dir="ltr">{{ object.created_at|date:'Y-m-d H:i' }}</bdi></time> · منذ {{ object.created_at|timesince }}</p>
     </div>
   </header>
 

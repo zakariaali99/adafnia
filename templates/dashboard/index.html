@@ -18,11 +18,11 @@
     <a class="alert bad" href="/dashboard/certificates/">{% include 'dashboard/icon.html' with name='award' %}<span><b>لا توجد شهادة جودة سارية.</b> الموقع يعرض الشهادات المنتهية في الأرشيف فقط. ارفع الشهادات المجدَّدة.</span></a>
   {% endif %}
   {% for certificate in expired_certificates %}
-    <a class="alert bad" href="/dashboard/certificates/{{ certificate.pk }}/edit/">{% include 'dashboard/icon.html' with name='alert' %}<span><b>{{ certificate }}</b> انتهت في {{ certificate.expires_on|date:'Y-m-d' }}. ارفع الشهادة المجدَّدة لتظهر في الموقع.</span></a>
+    <a class="alert bad" href="/dashboard/certificates/{{ certificate.pk }}/edit/">{% include 'dashboard/icon.html' with name='alert' %}<span><b>{{ certificate }}</b> انتهت في <bdi dir="ltr">{{ certificate.expires_on|date:'Y-m-d' }}</bdi>. ارفع الشهادة المجدَّدة لتظهر في الموقع.</span></a>
   {% endfor %}
   {% if expiring_certificates %}
     <div class="alert warn" role="status">{% include 'dashboard/icon.html' with name='award' %}<span><b>شهادات تنتهي خلال 30 يوماً</b>
-      {% for certificate in expiring_certificates %}<a href="/dashboard/certificates/{{ certificate.pk }}/edit/">{{ certificate }}</a> ({{ certificate.expires_on|date:'Y-m-d' }}){% if not forloop.last %}، {% endif %}{% endfor %}</span></div>
+      {% for certificate in expiring_certificates %}<a href="/dashboard/certificates/{{ certificate.pk }}/edit/">{{ certificate }}</a> (<bdi dir="ltr">{{ certificate.expires_on|date:'Y-m-d' }}</bdi>){% if not forloop.last %}، {% endif %}{% endfor %}</span></div>
   {% endif %}
   {% if pending_variants %}
     <a class="alert info" href="/dashboard/variants/?state=pending">{% include 'dashboard/icon.html' with name='ruler' %}<span><b>{{ pending_label }} بانتظار الاعتماد.</b> لا تظهر للزوار حتى يراجعها المهندس ويعتمدها.</span></a>

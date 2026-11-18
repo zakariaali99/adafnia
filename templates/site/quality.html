@@ -38,7 +38,7 @@
           <div class="cert-card rv">
             <b>{{ cert.title_en|default:cert.title_ar }}</b>
             <p>{% translated cert 'description' lang %}</p>
-            {% if cert.expires_on %}<span class="pill">{{ t.cert_valid_until }} {{ cert.expires_on|date:'Y-m-d' }}</span>{% endif %}
+            {% if cert.expires_on %}<span class="pill">{{ t.cert_valid_until }} <bdi dir="ltr">{{ cert.expires_on|date:'Y-m-d' }}</bdi></span>{% endif %}
             {% if cert.file %}<a class="more" href="{{ cert.file.url }}" target="_blank" rel="noopener">{{ t.view_document }}</a>{% endif %}
           </div>
         {% endfor %}
@@ -52,7 +52,7 @@
           <div class="cert-card rv">
             <b>{{ cert.title_en|default:cert.title_ar }}</b>
             <p>{% translated cert 'description' lang %}</p>
-            <span class="pill warn">{% if cert.expires_on %}{{ t.expired_on }} {{ cert.expires_on|date:'Y-m-d' }}{% else %}{{ t.cert_pending }}{% endif %}</span>
+            <span class="pill warn">{% if cert.expires_on %}{{ t.expired_on }} <bdi dir="ltr">{{ cert.expires_on|date:'Y-m-d' }}</bdi>{% else %}{{ t.cert_pending }}{% endif %}</span>
             {% if cert.file %}<a class="more" href="{{ cert.file.url }}" target="_blank" rel="noopener">{{ t.view_document }}</a>{% endif %}
           </div>
         {% endfor %}
